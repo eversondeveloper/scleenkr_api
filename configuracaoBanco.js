@@ -1,21 +1,8 @@
 const credenciais = {
-    user: '559c5dc48dec4355843231dd6a54bc8a',
-    host: 'postgres.shardatabases.app', 
-    database: 'database',
-    password: '48344834', 
-    port: 5432,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    user: process.env.DB_USER || 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    database: process.env.DB_NAME || 'everscash03',
+    password: process.env.DB_PASSWORD || '48344834',
+    port: process.env.DB_PORT || 5432,
 };
 module.exports = credenciais;
-
-
-// const credenciais = {
-//     user: 'postgres',
-//     host: 'localhost', 
-//     database: 'fastcash01',
-//     password: '48344834', 
-//     port: 5432,
-// };
-// module.exports = credenciais;
