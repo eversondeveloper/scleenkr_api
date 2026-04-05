@@ -1,5 +1,3 @@
----
-
 # EversCash API 🚀
 
 A **EversCash API** é o núcleo de processamento do sistema de PDV (Ponto de Venda) e Gestão Financeira. Desenvolvida para oferecer rapidez e integridade de dados, ela gerencia desde o catálogo de produtos e controle de estoque até o fechamento detalhado de sessões de caixa e relatórios de vendas.
@@ -141,5 +139,4 @@ COMMIT;
 4.  Instale as dependências: `npm install`.
 5.  Inicie o servidor: `npm start`.
 
----
 © 2026 Everscript - Todos os direitos reservados.
