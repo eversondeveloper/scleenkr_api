@@ -167,6 +167,14 @@ const obterVendas = async () => {
             a.nome AS nome_atendente, 
             a.cpf AS cpf_atendente,
             (
+                SELECT json_agg(item)
+                FROM (
+                    SELECT id_item, categoria, descricao_item, preco_unitario, quantidade, subtotal
+                    FROM itens_vendidos
+                    WHERE venda_id = v.id_venda
+                ) item
+            ) AS itens,
+            (
                 SELECT json_agg(p)
                 FROM pagamentos p
                 WHERE p.venda_id = v.id_venda
@@ -203,7 +211,8 @@ const criarVenda = async (dadosVenda) => {
         const valorPago = parseFloat(dadosVenda.valor_pago_total || dadosVenda.valorPagoTotal || 0);
         const valorTroco = parseFloat(dadosVenda.valor_troco || dadosVenda.valorTroco || 0);
         
-        const totalItens = (dadosVenda.itens || []).reduce((acc, item) => acc + parseFloat(item.quantidade || 0), 0);
+        const itensParaSalvar = dadosVenda.itens || [];
+        const totalItens = itensParaSalvar.reduce((acc, item) => acc + parseFloat(item.quantidade || 0), 0);
 
         const consultaVenda = `
             INSERT INTO vendas (valor_total_bruto, valor_pago_total, valor_troco, status_venda, id_empresa, id_atendente, id_sessao, quantidade_itens, editada) 
@@ -225,11 +234,16 @@ const criarVenda = async (dadosVenda) => {
                 [idVenda, p.metodo, isNaN(vPago) ? 0 : vPago, p.referencia_metodo ?? p.referenciaMetodo]);
         }
         
-        for (const i of (dadosVenda.itens || [])) {
+        for (const i of itensParaSalvar) {
             const precoUni = parseFloat(i.preco_unitario ?? i.precoUnitario ?? i.preco ?? 0);
             const qtd = parseFloat(i.quantidade || 0);
+            
+            // MAPEAR DESCRIÇÃO CORRETAMENTE:
+            // O frontend do carrinho usa 'descricao'. O backend esperava 'descricao_item'.
+            const nomeDoProduto = i.descricao || i.descricao_item || i.descricaoItem || "PRODUTO SEM NOME";
+
             await cliente.query(`INSERT INTO itens_vendidos (venda_id, categoria, descricao_item, preco_unitario, quantidade, subtotal) VALUES ($1, $2, $3, $4, $5, $6)`,
-                [idVenda, i.categoria, i.descricao_item || i.descricaoItem || i.descricao, precoUni, qtd, i.subtotal || (precoUni * qtd)]);
+                [idVenda, i.categoria || "Geral", nomeDoProduto, precoUni, qtd, i.subtotal || (precoUni * qtd)]);
             
             if (i.id_produto) {
                 await cliente.query(`UPDATE produtos SET estoque_atual = estoque_atual - $1 WHERE id_produto = $2`, [qtd, i.id_produto]);
