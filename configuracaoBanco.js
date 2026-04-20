@@ -6,5 +6,4 @@ const credenciais = {
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
 };
-console.log(credenciais.password)
 module.exports = credenciais;
