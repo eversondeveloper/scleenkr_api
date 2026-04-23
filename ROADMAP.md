@@ -4,7 +4,7 @@
 > Stack: Node.js + Express + PostgreSQL (Docker) · React + Vite
 > Repos: [`scleenkr_api`](.) (backend) · [`scleenkr`](../scleenkr) (frontend)
 >
-> **Decisão arquitetural:** monolito modular primeiro — não microsserviços.
+> **Decisão arquitetural:** monolito modular.
 > Banco único, sem ORM pesado, sem mensageria neste estágio.
 > Motivo: qualidade e manutenibilidade do código como motor principal.
 
@@ -24,7 +24,7 @@
 - CORS aberto (`*`)
 - Sem validação de entrada
 - Sem handler de erros centralizado
-- `.env.example` existente mas incompleto
+- `.env.example` existente mas ainda incompleto
 
 ### Frontend — `scleenkr`
 
@@ -81,9 +81,9 @@ scleenkr/src/
 
 ---
 
-## Regras de branch (não negociável)
+## Fluxo de branch
 
-- ❌ **Nunca** dar push direto em `main` ou `develop` sem autorização explícita
+- ❌ **Nunca** dar push direto em `main` ou `develop` sem autorização
 - Branch-mãe da refatoração: `refactor/modular-architecture`
 - Cada módulo/fase vira branch-filha: `refactor/modulo-<dominio>`
 - Merge das branches-filha → mãe primeiro; mãe → develop/main só após revisão
@@ -209,13 +209,6 @@ scleenkr/src/
 | cupom | `consultas.js` | `useCupom.jsx` |
 
 ---
-
-## Por que monolito modular (e não microsserviços)?
-
-- `criarVenda` é uma transação ACID de 4 tabelas — fatiamento exigiria SAGA/outbox pattern, overhead desnecessário agora
-- Escala organizacional de microsserviços não se aplica a time pequeno
-- A lentidão reportada é quase certamente ausência de índices, não arquitetura
-- Monolito modular entrega as mesmas fronteiras de domínio sem o custo operacional de múltiplos serviços
 
 ---
 
