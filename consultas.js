@@ -1,7 +1,7 @@
-const { Pool } = require('pg');
-const configuracao = require('./configuracaoBanco');
 
-const pool = new Pool(configuracao);
+const pool = require('./src/config/database');
+
+
 
 /**
  * FUNÇÃO AUXILIAR DE LIMPEZA SEGURA
