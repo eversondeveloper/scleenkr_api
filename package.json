@@ -7,17 +7,18 @@
     "start": "node servidor.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^5.1.0",
-    "pg": "^8.16.3"
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
+    "zod": "^3.24.0"
   },
-  "keywords": [
-    "postgres",
-    "express",
-    "pdv"
-  ],
+  "keywords": ["postgres", "express", "pdv"],
   "author": "",
   "license": "ISC"
 }
