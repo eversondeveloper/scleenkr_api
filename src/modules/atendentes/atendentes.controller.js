@@ -21,9 +21,14 @@ const atualizar = async (req, res) => {
     res.status(200).json({ mensagem: 'Atendente atualizado com sucesso.', atendente });
 };
 
+const atualizarSenha = async (req, res) => {
+    await service.atualizarSenha(req.params.id, req.body.senha);
+    res.status(200).json({ mensagem: 'Senha atualizada com sucesso.' });
+};
+
 const desativar = async (req, res) => {
     await service.desativar(req.params.id);
     res.status(200).json({ mensagem: 'Atendente desativado com sucesso.' });
 };
 
-module.exports = { listar, buscarPorId, criar, atualizar, desativar };
+module.exports = { listar, buscarPorId, criar, atualizar, atualizarSenha, desativar };

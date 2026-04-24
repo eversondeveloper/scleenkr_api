@@ -2,7 +2,7 @@ const pool = require('../../config/database');
 const AppError = require('../../shared/errors/AppError');
 
 const obterTodos = async (ativo = null, nome = null) => {
-    let query = 'SELECT * FROM atendentes WHERE 1=1';
+    let query = 'SELECT id_atendente, nome, email, telefone, cpf, id_empresa, ativo FROM atendentes WHERE 1=1';
     const params = [];
 
     if (ativo !== null) {
@@ -21,7 +21,7 @@ const obterTodos = async (ativo = null, nome = null) => {
 
 const obterPorId = async (idAtendente) => {
     const resultado = await pool.query(
-        'SELECT * FROM atendentes WHERE id_atendente = $1',
+        'SELECT id_atendente, nome, email, telefone, cpf, id_empresa, ativo FROM atendentes WHERE id_atendente = $1',
         [idAtendente]
     );
     return resultado.rows[0];
@@ -32,9 +32,9 @@ const criar = async (dados) => {
     try {
         await cliente.query('BEGIN');
         const consulta = `
-            INSERT INTO atendentes (nome, email, telefone, cpf, id_empresa)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING *
+            INSERT INTO atendentes (nome, email, telefone, cpf, id_empresa, senha_hash)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id_atendente, nome, email, telefone, cpf, id_empresa, ativo
         `;
         const resultado = await cliente.query(consulta, [
             dados.nome,
@@ -42,6 +42,7 @@ const criar = async (dados) => {
             dados.telefone,
             dados.cpf,
             dados.id_empresa,
+            dados.senha_hash,   // já vem hasheado do service
         ]);
         await cliente.query('COMMIT');
         return resultado.rows[0];
@@ -60,13 +61,13 @@ const atualizar = async (idAtendente, dados) => {
         await cliente.query('BEGIN');
         const consulta = `
             UPDATE atendentes SET
-                nome      = COALESCE($1, nome),
-                email     = COALESCE($2, email),
-                telefone  = COALESCE($3, telefone),
-                cpf       = COALESCE($4, cpf),
-                ativo     = COALESCE($5, ativo)
+                nome     = COALESCE($1, nome),
+                email    = COALESCE($2, email),
+                telefone = COALESCE($3, telefone),
+                cpf      = COALESCE($4, cpf),
+                ativo    = COALESCE($5, ativo)
             WHERE id_atendente = $6
-            RETURNING *
+            RETURNING id_atendente, nome, email, telefone, cpf, id_empresa, ativo
         `;
         const resultado = await cliente.query(consulta, [
             dados.nome,
@@ -84,6 +85,13 @@ const atualizar = async (idAtendente, dados) => {
     } finally {
         cliente.release();
     }
+};
+
+const atualizarSenha = async (idAtendente, senhaHash) => {
+    await pool.query(
+        'UPDATE atendentes SET senha_hash = $1 WHERE id_atendente = $2',
+        [senhaHash, idAtendente]
+    );
 };
 
 const desativar = async (idAtendente) => {
@@ -111,4 +119,4 @@ const desativar = async (idAtendente) => {
     }
 };
 
-module.exports = { obterTodos, obterPorId, criar, atualizar, desativar };
+module.exports = { obterTodos, obterPorId, criar, atualizar, atualizarSenha, desativar };

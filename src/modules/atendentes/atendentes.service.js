@@ -1,7 +1,8 @@
+const bcrypt     = require('bcryptjs');
 const repository = require('./atendentes.repository');
-const AppError = require('../../shared/errors/AppError');
+const AppError   = require('../../shared/errors/AppError');
 
-const listar = async (ativo, nome) => repository.obterTodos(ativo, nome);
+const listar = (ativo, nome) => repository.obterTodos(ativo, nome);
 
 const buscarPorId = async (idAtendente) => {
     const atendente = await repository.obterPorId(idAtendente);
@@ -9,7 +10,10 @@ const buscarPorId = async (idAtendente) => {
     return atendente;
 };
 
-const criar = async (dados) => repository.criar(dados);
+const criar = async (dados) => {
+    const senhaHash = await bcrypt.hash(dados.senha, 12);
+    return repository.criar({ ...dados, senha_hash: senhaHash });
+};
 
 const atualizar = async (idAtendente, dados) => {
     const atendente = await repository.atualizar(idAtendente, dados);
@@ -17,9 +21,15 @@ const atualizar = async (idAtendente, dados) => {
     return atendente;
 };
 
+const atualizarSenha = async (idAtendente, senha) => {
+    await buscarPorId(idAtendente);   // lança 404 se não existir
+    const senhaHash = await bcrypt.hash(senha, 12);
+    await repository.atualizarSenha(idAtendente, senhaHash);
+};
+
 const desativar = async (idAtendente) => {
     await buscarPorId(idAtendente);
     await repository.desativar(idAtendente);
 };
 
-module.exports = { listar, buscarPorId, criar, atualizar, desativar };
+module.exports = { listar, buscarPorId, criar, atualizar, atualizarSenha, desativar };

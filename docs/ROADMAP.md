@@ -140,10 +140,10 @@ scleenkr/src/
 
 > Sessões de caixa: dependente de atendentes. Fazer após Fase 2 completa.
 
-- [ ] Criar módulo `sessoes` completo (routes/controller/service/repository)
-- [ ] Garantir que abertura/fechamento de sessão seja transação atômica
-- [ ] Validar integração com módulo `atendentes`
-- [ ] Abrir PR: `refactor/modulo-sessoes` → `develop`
+- [x] Criar módulo `sessoes` completo (routes/controller/service/repository)
+- [x] Garantir que abertura/fechamento de sessão seja transação atômica
+- [x] Validar integração com módulo `atendentes`
+- [x] Abrir PR: `refactor/modulo-sessoes` → `develop`
 
 ---
 
@@ -153,12 +153,12 @@ scleenkr/src/
 > `vendas` + `pagamentos` + `itens_vendidos` + `produtos` (estoque).
 > Qualquer erro no meio deve dar rollback total.
 
-- [ ] Criar `vendas.repository.js` com transação explícita (`BEGIN / COMMIT / ROLLBACK`)
-- [ ] Criar `vendas.service.js` mantendo toda a lógica de negócio de venda
-- [ ] Criar `vendas.controller.js` e `vendas.routes.js`
-- [ ] Validar: cenário de falha no meio da venda deve reverter tudo
-- [ ] Após esta fase, `consultas.js` deve estar vazio (pode ser deletado)
-- [ ] Abrir PR: `refactor/modulo-vendas` → `develop`
+- [x] Criar `vendas.repository.js` com transação explícita (`BEGIN / COMMIT / ROLLBACK`)
+- [x] Criar `vendas.service.js` mantendo toda a lógica de negócio de venda
+- [x] Criar `vendas.controller.js` e `vendas.routes.js`
+- [x] Validar: cenário de falha no meio da venda deve reverter tudo
+- [x] Após esta fase, `consultas.js` deve estar vazio (pode ser deletado)
+- [x] Abrir PR: `refactor/modulo-vendas` → `develop`
 
 ---
 
@@ -166,12 +166,12 @@ scleenkr/src/
 
 > Hoje: sem auth, CORS `*`, sem validação.
 
-- [ ] Adicionar `helmet` (headers HTTP de segurança)
-- [ ] Configurar CORS com lista de origens permitidas (não `*`)
-- [ ] Implementar JWT (login de atendente/empresa, token por sessão de caixa)
-- [ ] Adicionar `express-validator` ou `zod` nas rotas de entrada
-- [ ] Implementar `rate-limit` nas rotas públicas
-- [ ] Abrir PR: `refactor/fase-5-seguranca` → `develop`
+- [x] Adicionar `helmet` (headers HTTP de segurança)
+- [x] Configurar CORS com lista de origens permitidas (não `*`)
+- [x] Implementar JWT (login de atendente/empresa, token por sessão de caixa)
+- [x] Adicionar `express-validator` ou `zod` nas rotas de entrada
+- [x] Implementar `rate-limit` nas rotas públicas
+- [x] Abrir PR: `refactor/fase-5-seguranca` → `develop`
 
 ---
 
@@ -221,4 +221,4 @@ scleenkr/src/
 
 ---
 
-*Última atualização: 2026-04-24 — Fase 0 ✅ · Fase 1 ✅ · Fase 2 ✅ · Fase 3 em andamento*
+*Última atualização: 2026-04-24 — Fase 0 ✅ · Fase 1 ✅ · Fase 2 ✅ · Fase 3 ✅ · Fase 4 ✅ · Fase 5 ✅*
