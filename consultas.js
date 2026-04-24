@@ -208,25 +208,6 @@ const apagarVendasEmMassa = async (idsVendas) => {
 
 // ========== ATUALIZAÇÃO DE PAGAMENTOS E VENDAS ==========
 
-const atualizarPagamentosVenda = async (idVenda, novosPagamentos) => {
-    const cliente = await pool.connect();
-    try {
-        await cliente.query('BEGIN');
-        await cliente.query('DELETE FROM pagamentos WHERE venda_id = $1', [idVenda]);
-        for (const p of novosPagamentos) {
-            const valorFinal = parseFloat(p.valor_pago ?? p.valorPago ?? 0);
-            await cliente.query(`INSERT INTO pagamentos (venda_id, metodo, valor_pago, referencia_metodo) VALUES ($1, $2, $3, $4)`,
-                [idVenda, p.metodo || 'Dinheiro', isNaN(valorFinal) ? 0 : valorFinal, p.referencia_metodo ?? p.referenciaMetodo ?? null]);
-        }
-        const resTotais = await cliente.query('SELECT SUM(valor_pago) as total FROM pagamentos WHERE venda_id = $1', [idVenda]);
-        const totalPago = parseFloat(resTotais.rows[0].total) || 0;
-        const resVenda = await cliente.query(`UPDATE vendas SET valor_pago_total = $1, valor_troco = GREATEST($1 - valor_total_bruto, 0), editada = true
-                                              WHERE id_venda = $2 RETURNING *`, [totalPago, idVenda]);
-        await cliente.query('COMMIT');
-        return { sucesso: true, venda: resVenda.rows[0] };
-    } catch (e) { await cliente.query('ROLLBACK'); return { sucesso: false, erro: e.message }; } finally { cliente.release(); }
-};
-
 const atualizarVendaCompleta = async (idVenda, dadosVenda) => {
     const cliente = await pool.connect();
     try {
@@ -252,5 +233,5 @@ const atualizarVendaCompleta = async (idVenda, dadosVenda) => {
 module.exports = {
     obterSessoesCaixa, obterSessaoAtual, abrirSessaoCaixa, fecharSessaoCaixa,
     obterVendas, obterDetalhesVenda, criarVenda, atualizarStatusVenda, apagarVenda, apagarVendasEmMassa,
-    atualizarPagamentosVenda, atualizarVendaCompleta
+    atualizarVendaCompleta
 };
