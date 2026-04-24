@@ -22,92 +22,6 @@ const deletarSeColunaExistir = async (cliente, tabela, coluna, valor) => {
     }
 };
 
-// ========== FUNÇÕES PARA ATENDENTES ==========
-
-const obterAtendentes = async (ativo = null, nome = null) => {
-    let query = 'SELECT * FROM atendentes WHERE 1=1';
-    const params = [];
-    if (ativo !== null) {
-        query += ' AND ativo = $1';
-        params.push(ativo === 'true');
-    }
-    if (nome) {
-        query += ` AND nome ILIKE $${params.length + 1}`;
-        params.push(`%${nome}%`);
-    }
-    query += ' ORDER BY nome';
-    const resultado = await pool.query(query, params);
-    return resultado.rows;
-};
-
-const obterAtendentePorId = async (idAtendente) => {
-    const consulta = 'SELECT * FROM atendentes WHERE id_atendente = $1';
-    const resultado = await pool.query(consulta, [idAtendente]);
-    return resultado.rows[0];
-};
-
-const criarAtendente = async (dadosAtendente) => {
-    const cliente = await pool.connect();
-    try {
-        await cliente.query('BEGIN');
-        const consulta = `
-            INSERT INTO atendentes (nome, email, telefone, cpf, id_empresa) 
-            VALUES ($1, $2, $3, $4, $5) 
-            RETURNING *
-        `;
-        const valores = [
-            dadosAtendente.nome, 
-            dadosAtendente.email, 
-            dadosAtendente.telefone, 
-            dadosAtendente.cpf,
-            dadosAtendente.id_empresa
-        ];
-        const resultado = await cliente.query(consulta, valores);
-        await cliente.query('COMMIT');
-        return { sucesso: true, atendente: resultado.rows[0] };
-    } catch (erro) {
-        await cliente.query('ROLLBACK');
-        if (erro.code === '23505') return { sucesso: false, erro: 'Email ou CPF já cadastrado' };
-        return { sucesso: false, erro: erro.message };
-    } finally { cliente.release(); }
-};
-
-const atualizarAtendente = async (idAtendente, dadosAtendente) => {
-    const cliente = await pool.connect();
-    try {
-        await cliente.query('BEGIN');
-        const consulta = `
-            UPDATE atendentes SET nome = COALESCE($1, nome), email = COALESCE($2, email),
-            telefone = COALESCE($3, telefone), cpf = COALESCE($4, cpf), ativo = COALESCE($5, ativo)
-            WHERE id_atendente = $6 RETURNING *
-        `;
-        const valores = [dadosAtendente.nome, dadosAtendente.email, dadosAtendente.telefone, dadosAtendente.cpf, dadosAtendente.ativo, idAtendente];
-        const resultado = await cliente.query(consulta, valores);
-        await cliente.query('COMMIT');
-        return { sucesso: true, atendente: resultado.rows[0] };
-    } catch (erro) {
-        await cliente.query('ROLLBACK');
-        return { sucesso: false, erro: erro.message };
-    } finally { cliente.release(); }
-};
-
-const deletarAtendente = async (idAtendente) => {
-    const cliente = await pool.connect();
-    try {
-        await cliente.query('BEGIN');
-        const sessaoAberta = await cliente.query('SELECT * FROM sessoes_caixa WHERE id_atendente = $1 AND status = $2', [idAtendente, 'aberta']);
-        if (sessaoAberta.rows.length > 0) { 
-            await cliente.query('ROLLBACK'); 
-            return { sucesso: false, erro: 'Sessão aberta detectada. Feche o caixa antes de eliminar.' }; 
-        }
-        await cliente.query('UPDATE atendentes SET ativo = false WHERE id_atendente = $1', [idAtendente]);
-        await cliente.query('COMMIT');
-        return { sucesso: true };
-    } catch (erro) { 
-        await cliente.query('ROLLBACK'); 
-        return { sucesso: false, erro: 'Este atendente possui registros vinculados.' }; 
-    } finally { cliente.release(); }
-};
 
 // ========== FUNÇÕES PARA SESSÕES DE CAIXA ==========
 
@@ -388,7 +302,6 @@ const obterObservacoesPorPeriodo = async (inicio, fim) => {
 };
 
 module.exports = {
-    obterAtendentes, obterAtendentePorId, criarAtendente, atualizarAtendente, deletarAtendente,
     obterSessoesCaixa, obterSessaoAtual, abrirSessaoCaixa, fecharSessaoCaixa,
     obterVendas, obterDetalhesVenda, criarVenda, atualizarStatusVenda, apagarVenda, apagarVendasEmMassa,
     obterRetiradasCaixa, criarRetiradaCaixa, atualizarPagamentosVenda, atualizarVendaCompleta, salvarObservacaoDiaria, obterObservacaoPorData, deletarObservacaoDiaria, obterObservacoesPorPeriodo

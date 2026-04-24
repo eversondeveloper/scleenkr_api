@@ -4,6 +4,7 @@ const cors = require('cors');
 const consultas = require('./consultas');
 const empresasRoutes = require('./src/modules/empresas/empresas.routes');
 const produtosRoutes = require('./src/modules/produtos/produtos.routes');
+const atendentesRoutes = require('./src/modules/atendentes/atendentes.routes');
 const errorHandler = require('./src/middlewares/errorHandler');
 
 const aplicativo = express();
@@ -16,6 +17,7 @@ aplicativo.use(bodyParser.urlencoded({ extended: true }));
 // ========== MÓDULOS REFATORADOS (Strangler Fig) ==========
 aplicativo.use('/empresas', empresasRoutes);
 aplicativo.use('/produtos', produtosRoutes);
+aplicativo.use('/atendentes', atendentesRoutes);
 
 // ========== ROTAS PARA VENDAS ==========
 aplicativo.get('/vendas', async (requisicao, resposta) => {
@@ -100,89 +102,6 @@ aplicativo.post('/vendas/deletar-periodo', async (requisicao, resposta) => {
         }
     } catch (erro) {
         resposta.status(500).send('Erro interno do servidor ao processar exclusão em massa.');
-    }
-});
-
-// ========== ROTAS PARA ATENDENTES ==========
-aplicativo.get('/atendentes', async (requisicao, resposta) => {
-    try {
-        const { ativo, nome } = requisicao.query;
-        const atendentes = await consultas.obterAtendentes(ativo, nome);
-        resposta.status(200).json(atendentes);
-    } catch (erro) {
-        resposta.status(500).send('Erro ao obter atendentes');
-    }
-});
-
-aplicativo.get('/atendentes/:id', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    try {
-        const atendente = await consultas.obterAtendentePorId(id);
-        if (atendente) {
-            resposta.status(200).json(atendente);
-        } else {
-            resposta.status(404).send('Atendente não encontrado');
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro ao obter detalhes do atendente');
-    }
-});
-
-aplicativo.post('/atendentes', async (requisicao, resposta) => {
-    try {
-        const resultado = await consultas.criarAtendente(requisicao.body);
-        if (resultado.sucesso) {
-            resposta.status(201).json({ 
-                mensagem: 'Atendente criado com sucesso', 
-                atendente: resultado.atendente 
-            });
-        } else {
-            resposta.status(400).json({ 
-                mensagem: 'Falha ao criar atendente', 
-                erro: resultado.erro 
-            });
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro interno do servidor ao criar atendente');
-    }
-});
-
-aplicativo.put('/atendentes/:id', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    try {
-        const resultado = await consultas.atualizarAtendente(id, requisicao.body);
-        if (resultado.sucesso) {
-            resposta.status(200).json({ 
-                mensagem: 'Atendente atualizado com sucesso', 
-                atendente: resultado.atendente 
-            });
-        } else {
-            resposta.status(400).json({ 
-                mensagem: 'Falha ao atualizar atendente', 
-                erro: resultado.erro 
-            });
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro interno do servidor ao atualizar atendente');
-    }
-});
-
-aplicativo.delete('/atendentes/:id', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    try {
-        const resultado = await consultas.deletarAtendente(id);
-        if (resultado.sucesso) {
-            resposta.status(200).json({ 
-                mensagem: 'Atendente deletado com sucesso' 
-            });
-        } else {
-            resposta.status(400).json({ 
-                mensagem: 'Falha ao deletar atendente', 
-                erro: resultado.erro 
-            });
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro interno do servidor ao deletar atendente');
     }
 });
 
