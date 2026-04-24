@@ -6,7 +6,8 @@ const empresasRoutes = require('./src/modules/empresas/empresas.routes');
 const produtosRoutes = require('./src/modules/produtos/produtos.routes');
 const atendentesRoutes = require('./src/modules/atendentes/atendentes.routes');
 const retiradasRoutes   = require('./src/modules/retiradas/retiradas.routes');
-const observacoesRoutes = require('./src/modules/observacoes/observacoes.routes');
+const observacoesRoutes  = require('./src/modules/observacoes/observacoes.routes');
+const pagamentosRoutes  = require('./src/modules/pagamentos/pagamentos.routes');
 const errorHandler = require('./src/middlewares/errorHandler');
 
 const aplicativo = express();
@@ -22,6 +23,7 @@ aplicativo.use('/produtos', produtosRoutes);
 aplicativo.use('/atendentes', atendentesRoutes);
 aplicativo.use('/retiradas-caixa', retiradasRoutes);
 aplicativo.use('/observacoes-diarias', observacoesRoutes);
+aplicativo.use('/vendas', pagamentosRoutes);
 
 // ========== ROTAS PARA VENDAS ==========
 aplicativo.get('/vendas', async (requisicao, resposta) => {
@@ -168,31 +170,6 @@ aplicativo.put('/sessoes-caixa/:id/fechar', async (requisicao, resposta) => {
 });
 
 // ========== ROTAS PARA EMPRESAS ==========
-// ========== ATUALIZAÇÃO DE PAGAMENTOS E VENDAS ==========
-
-aplicativo.patch('/vendas/:id/pagamentos', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    const pagamentos = requisicao.body.pagamentos;
-
-    if (!pagamentos || !Array.isArray(pagamentos)) {
-        return resposta.status(400).json({ mensagem: 'O corpo da requisição deve conter um array de pagamentos' });
-    }
-
-    try {
-        const resultado = await consultas.atualizarPagamentosVenda(id, pagamentos);
-        if (resultado.sucesso) {
-            resposta.status(200).json({ 
-                mensagem: 'Pagamentos atualizados com sucesso', 
-                venda: resultado.venda 
-            });
-        } else {
-            resposta.status(400).json({ mensagem: 'Falha ao atualizar pagamentos', erro: resultado.erro });
-        }
-    } catch (erro) {
-        console.error('Erro na rota patch /pagamentos:', erro);
-        resposta.status(500).send('Erro interno do servidor');
-    }
-});
 
 aplicativo.patch('/vendas/:id', async (requisicao, resposta) => {
     const id = parseInt(requisicao.params.id);
