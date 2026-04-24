@@ -248,40 +248,9 @@ const atualizarVendaCompleta = async (idVenda, dadosVenda) => {
     } catch (e) { await cliente.query('ROLLBACK'); return { sucesso: false, erro: e.message }; } finally { cliente.release(); }
 };
 
-// ========== OBSERVAÇÕES DIÁRIAS ==========
-
-const obterObservacaoPorData = async (data) => {
-    const resultado = await pool.query(`SELECT * FROM observacoes_diarias WHERE data_observacao = $1`, [data]);
-    return resultado.rows[0] || null;
-};
-
-const salvarObservacaoDiaria = async (data, texto, id_empresa) => {
-    const cliente = await pool.connect();
-    try {
-        await cliente.query('BEGIN');
-        const consulta = `INSERT INTO observacoes_diarias (data_observacao, texto, id_empresa)
-                          VALUES ($1, $2, $3)
-                          ON CONFLICT (data_observacao) 
-                          DO UPDATE SET texto = EXCLUDED.texto, data_criacao = CURRENT_TIMESTAMP
-                          RETURNING *;`;
-        const resultado = await cliente.query(consulta, [data, texto, id_empresa]);
-        await cliente.query('COMMIT');
-        return { sucesso: true, observacao: resultado.rows[0] };
-    } catch (e) { await cliente.query('ROLLBACK'); return { sucesso: false, erro: e.message }; } finally { cliente.release(); }
-};
-
-const deletarObservacaoDiaria = async (data) => {
-    const resultado = await pool.query(`DELETE FROM observacoes_diarias WHERE data_observacao = $1 RETURNING *`, [data]);
-    return { sucesso: true, deletado: resultado.rows.length > 0 };
-};
-
-const obterObservacoesPorPeriodo = async (inicio, fim) => {
-    const resultado = await pool.query(`SELECT * FROM observacoes_diarias WHERE data_observacao BETWEEN $1 AND $2 ORDER BY data_observacao ASC`, [inicio, fim]);
-    return resultado.rows;
-};
 
 module.exports = {
     obterSessoesCaixa, obterSessaoAtual, abrirSessaoCaixa, fecharSessaoCaixa,
     obterVendas, obterDetalhesVenda, criarVenda, atualizarStatusVenda, apagarVenda, apagarVendasEmMassa,
-    atualizarPagamentosVenda, atualizarVendaCompleta, salvarObservacaoDiaria, obterObservacaoPorData, deletarObservacaoDiaria, obterObservacoesPorPeriodo
+    atualizarPagamentosVenda, atualizarVendaCompleta
 };
