@@ -205,27 +205,6 @@ const apagarVendasEmMassa = async (idsVendas) => {
 
 // ========== FUNÇÕES PARA EMPRESAS ==========
 
-// ========== RETIRADAS DE CAIXA ==========
-
-const obterRetiradasCaixa = async (inicio, fim) => {
-    let query = `SELECT *, (data_retirada AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') AS data_corrigida FROM retiradas_caixa`;
-    const params = [];
-    if (inicio && fim) { query += ` WHERE DATE(data_retirada AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') BETWEEN $1 AND $2`; params.push(inicio, fim); }
-    query += ` ORDER BY data_corrigida DESC`;
-    return (await pool.query(query, params)).rows;
-};
-
-const criarRetiradaCaixa = async (dados) => {
-    const cliente = await pool.connect();
-    try {
-        await cliente.query('BEGIN');
-        let valor = typeof dados.valor === 'string' ? parseFloat(dados.valor.replace('R$', '').replace(',', '.')) : dados.valor;
-        const res = await cliente.query(`INSERT INTO retiradas_caixa (valor, motivo, observacao, data_retirada, id_empresa) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-            [valor, dados.motivo, dados.observacao, dados.dataRetirada, dados.id_empresa]);
-        await cliente.query('COMMIT');
-        return { sucesso: true, retirada: res.rows[0] };
-    } catch (e) { await cliente.query('ROLLBACK'); return { sucesso: false, erro: e.message }; } finally { cliente.release(); }
-};
 
 // ========== ATUALIZAÇÃO DE PAGAMENTOS E VENDAS ==========
 
@@ -304,5 +283,5 @@ const obterObservacoesPorPeriodo = async (inicio, fim) => {
 module.exports = {
     obterSessoesCaixa, obterSessaoAtual, abrirSessaoCaixa, fecharSessaoCaixa,
     obterVendas, obterDetalhesVenda, criarVenda, atualizarStatusVenda, apagarVenda, apagarVendasEmMassa,
-    obterRetiradasCaixa, criarRetiradaCaixa, atualizarPagamentosVenda, atualizarVendaCompleta, salvarObservacaoDiaria, obterObservacaoPorData, deletarObservacaoDiaria, obterObservacoesPorPeriodo
+    atualizarPagamentosVenda, atualizarVendaCompleta, salvarObservacaoDiaria, obterObservacaoPorData, deletarObservacaoDiaria, obterObservacoesPorPeriodo
 };
