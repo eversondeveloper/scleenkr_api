@@ -7,6 +7,7 @@ const produtosRoutes = require('./src/modules/produtos/produtos.routes');
 const atendentesRoutes = require('./src/modules/atendentes/atendentes.routes');
 const retiradasRoutes   = require('./src/modules/retiradas/retiradas.routes');
 const observacoesRoutes  = require('./src/modules/observacoes/observacoes.routes');
+const sessoesRoutes     = require('./src/modules/sessoes/sessoes.routes');
 const pagamentosRoutes  = require('./src/modules/pagamentos/pagamentos.routes');
 const errorHandler = require('./src/middlewares/errorHandler');
 
@@ -23,6 +24,7 @@ aplicativo.use('/produtos', produtosRoutes);
 aplicativo.use('/atendentes', atendentesRoutes);
 aplicativo.use('/retiradas-caixa', retiradasRoutes);
 aplicativo.use('/observacoes-diarias', observacoesRoutes);
+aplicativo.use('/sessoes-caixa', sessoesRoutes);
 aplicativo.use('/vendas', pagamentosRoutes);
 
 // ========== ROTAS PARA VENDAS ==========
@@ -108,64 +110,6 @@ aplicativo.post('/vendas/deletar-periodo', async (requisicao, resposta) => {
         }
     } catch (erro) {
         resposta.status(500).send('Erro interno do servidor ao processar exclusão em massa.');
-    }
-});
-
-// ========== ROTAS PARA SESSÕES DE CAIXA ==========
-aplicativo.get('/sessoes-caixa', async (requisicao, resposta) => {
-    try {
-        const sessoes = await consultas.obterSessoesCaixa();
-        resposta.status(200).json(sessoes);
-    } catch (erro) {
-        resposta.status(500).send('Erro ao obter sessões de caixa');
-    }
-});
-
-aplicativo.get('/sessoes-caixa/atual', async (requisicao, resposta) => {
-    try {
-        const sessao = await consultas.obterSessaoAtual();
-        resposta.status(200).json(sessao);
-    } catch (erro) {
-        resposta.status(500).send('Erro ao obter sessão atual');
-    }
-});
-
-aplicativo.post('/sessoes-caixa', async (requisicao, resposta) => {
-    try {
-        const resultado = await consultas.abrirSessaoCaixa(requisicao.body);
-        if (resultado.sucesso) {
-            resposta.status(201).json({ 
-                mensagem: 'Sessão de caixa aberta com sucesso', 
-                sessao: resultado.sessao 
-            });
-        } else {
-            resposta.status(400).json({ 
-                mensagem: 'Falha ao abrir sessão de caixa', 
-                erro: resultado.erro 
-            });
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro interno do servidor ao abrir sessão de caixa');
-    }
-});
-
-aplicativo.put('/sessoes-caixa/:id/fechar', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    try {
-        const resultado = await consultas.fecharSessaoCaixa(id, requisicao.body);
-        if (resultado.sucesso) {
-            resposta.status(200).json({ 
-                mensagem: 'Sessão de caixa fechada com sucesso', 
-                sessao: resultado.sessao 
-            });
-        } else {
-            resposta.status(400).json({ 
-                mensagem: 'Falha ao fechar sessão de caixa', 
-                erro: resultado.erro 
-            });
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro interno do servidor ao fechar sessão de caixa');
     }
 });
 
