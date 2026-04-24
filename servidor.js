@@ -5,7 +5,8 @@ const consultas = require('./consultas');
 const empresasRoutes = require('./src/modules/empresas/empresas.routes');
 const produtosRoutes = require('./src/modules/produtos/produtos.routes');
 const atendentesRoutes = require('./src/modules/atendentes/atendentes.routes');
-const retiradasRoutes  = require('./src/modules/retiradas/retiradas.routes');
+const retiradasRoutes   = require('./src/modules/retiradas/retiradas.routes');
+const observacoesRoutes = require('./src/modules/observacoes/observacoes.routes');
 const errorHandler = require('./src/middlewares/errorHandler');
 
 const aplicativo = express();
@@ -20,6 +21,7 @@ aplicativo.use('/empresas', empresasRoutes);
 aplicativo.use('/produtos', produtosRoutes);
 aplicativo.use('/atendentes', atendentesRoutes);
 aplicativo.use('/retiradas-caixa', retiradasRoutes);
+aplicativo.use('/observacoes-diarias', observacoesRoutes);
 
 // ========== ROTAS PARA VENDAS ==========
 aplicativo.get('/vendas', async (requisicao, resposta) => {
@@ -208,71 +210,6 @@ aplicativo.patch('/vendas/:id', async (requisicao, resposta) => {
         resposta.status(500).send('Erro interno do servidor ao atualizar venda');
     }
 });
-
-// ========== ROTAS PARA OBSERVAÇÕES DIÁRIAS (CRUD COMPLETO) ==========
-
-aplicativo.get('/observacoes-diarias', async (requisicao, resposta) => {
-    try {
-        const { data, fim } = requisicao.query; 
-        if (!data) {
-            return resposta.status(400).send('Data de início não informada');
-        }
-        const observacoes = await consultas.obterObservacoesPorPeriodo(data, fim || data);
-        resposta.status(200).json(observacoes);
-    } catch (erro) {
-        console.error('Erro ao buscar observações:', erro);
-        resposta.status(500).send('Erro ao obter observações diárias');
-    }
-});
-
-aplicativo.post('/observacoes-diarias', async (requisicao, resposta) => {
-    try {
-        const { data, texto, id_empresa } = requisicao.body;
-        if (!data || texto === undefined) {
-            return resposta.status(400).json({ mensagem: 'Data e texto são obrigatórios' });
-        }
-        const resultado = await consultas.salvarObservacaoDiaria(data, texto, id_empresa);
-        if (resultado.sucesso) {
-            resposta.status(200).json({ 
-                mensagem: 'Observação salva com sucesso', 
-                observacao: resultado.observacao 
-            });
-        } else {
-            resposta.status(400).json({ 
-                mensagem: 'Falha ao salvar observação', 
-                erro: resultado.erro 
-            });
-        }
-    } catch (erro) {
-        console.error('Erro na rota de salvamento:', erro);
-        resposta.status(500).send('Erro interno ao processar observação');
-    }
-});
-
-aplicativo.delete('/observacoes-diarias', async (requisicao, resposta) => {
-    try {
-        const { data } = requisicao.query;
-        if (!data) {
-            return resposta.status(400).send('Data não informada');
-        }
-        const resultado = await consultas.deletarObservacaoDiaria(data);
-        if (resultado.sucesso) {
-            if (resultado.deletado) {
-                resposta.status(200).json({ mensagem: 'Observação excluída com sucesso' });
-            } else {
-                resposta.status(404).json({ mensagem: 'Nenhuma observação encontrada para esta data' });
-            }
-        } else {
-            resposta.status(400).json({ mensagem: 'Falha ao excluir observação', erro: resultado.erro });
-        }
-    } catch (erro) {
-        console.error('Erro na rota de exclusão:', erro);
-        resposta.status(500).send('Erro interno ao excluir observação');
-    }
-});
-
-// Handler central de erros — deve ser o último middleware registrado
-aplicativo.use(errorHandler);
 
 aplicativo.listen(porta, () => {
     console.log(`API EversCash rodando na porta ${porta}.`);
