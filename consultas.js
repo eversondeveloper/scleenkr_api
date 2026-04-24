@@ -289,42 +289,6 @@ const apagarVendasEmMassa = async (idsVendas) => {
     } catch (erro) { await cliente.query('ROLLBACK'); return { sucesso: false, mensagem: erro.message }; } finally { cliente.release(); }
 };
 
-// ========== FUNÇÕES PARA PRODUTOS ==========
-
-const obterProdutosComVendas = async () => {
-    const consulta = `SELECT p.*, COALESCE(SUM(iv.quantidade), 0) AS total_vendido FROM produtos p
-                      LEFT JOIN itens_vendidos iv ON p.categoria = iv.categoria AND p.descricao = iv.descricao_item
-                      WHERE p.ativo = TRUE GROUP BY p.id_produto ORDER BY p.id_produto ASC`;
-    const resultado = await pool.query(consulta);
-    return resultado.rows.map(row => ({ ...row, total_vendido: parseInt(row.total_vendido, 10) || 0 }));
-};
-
-const obterProdutoPorId = async (idProduto) => {
-    const resultado = await pool.query('SELECT * FROM produtos WHERE id_produto = $1', [idProduto]);
-    return resultado.rows[0];
-};
-
-const criarProduto = async (dados) => {
-    const consulta = `INSERT INTO produtos (categoria, descricao, preco, tipo_item, custo_unitario, estoque_atual, codigo_barra, id_empresa) 
-                      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
-    const res = await pool.query(consulta, [dados.categoria, dados.descricao, dados.preco, dados.tipoItem || 'Serviço', dados.custoUnitario || 0, dados.estoqueAtual || 0, dados.codigoBarra, dados.id_empresa]);
-    return res.rows[0];
-};
-
-const atualizarProduto = async (id, dados) => {
-    const consulta = `UPDATE produtos SET categoria = COALESCE($1, categoria), descricao = COALESCE($2, descricao),
-                      preco = COALESCE($3, preco), tipo_item = COALESCE($4, tipo_item), custo_unitario = COALESCE($5, custo_unitario),
-                      estoque_atual = COALESCE($6, estoque_atual), codigo_barra = COALESCE($7, codigo_barra)
-                      WHERE id_produto = $8 RETURNING *`;
-    const res = await pool.query(consulta, [dados.categoria, dados.descricao, dados.preco, dados.tipoItem, dados.custoUnitario, dados.estoqueAtual, dados.codigoBarra, id]);
-    return res.rows[0];
-};
-
-const desativarProduto = async (id) => {
-    const res = await pool.query('UPDATE produtos SET ativo = FALSE WHERE id_produto = $1 RETURNING *', [id]);
-    return res.rows[0];
-};
-
 // ========== FUNÇÕES PARA EMPRESAS ==========
 
 // ========== RETIRADAS DE CAIXA ==========
@@ -427,6 +391,5 @@ module.exports = {
     obterAtendentes, obterAtendentePorId, criarAtendente, atualizarAtendente, deletarAtendente,
     obterSessoesCaixa, obterSessaoAtual, abrirSessaoCaixa, fecharSessaoCaixa,
     obterVendas, obterDetalhesVenda, criarVenda, atualizarStatusVenda, apagarVenda, apagarVendasEmMassa,
-    obterProdutos: obterProdutosComVendas, obterProdutoPorId, criarProduto, atualizarProduto, desativarProduto,
     obterRetiradasCaixa, criarRetiradaCaixa, atualizarPagamentosVenda, atualizarVendaCompleta, salvarObservacaoDiaria, obterObservacaoPorData, deletarObservacaoDiaria, obterObservacoesPorPeriodo
 };

@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const consultas = require('./consultas');
 const empresasRoutes = require('./src/modules/empresas/empresas.routes');
+const produtosRoutes = require('./src/modules/produtos/produtos.routes');
 const errorHandler = require('./src/middlewares/errorHandler');
 
 const aplicativo = express();
@@ -14,6 +15,7 @@ aplicativo.use(bodyParser.urlencoded({ extended: true }));
 
 // ========== MÓDULOS REFATORADOS (Strangler Fig) ==========
 aplicativo.use('/empresas', empresasRoutes);
+aplicativo.use('/produtos', produtosRoutes);
 
 // ========== ROTAS PARA VENDAS ==========
 aplicativo.get('/vendas', async (requisicao, resposta) => {
@@ -239,68 +241,6 @@ aplicativo.put('/sessoes-caixa/:id/fechar', async (requisicao, resposta) => {
         }
     } catch (erro) {
         resposta.status(500).send('Erro interno do servidor ao fechar sessão de caixa');
-    }
-});
-
-// ========== ROTAS PARA PRODUTOS ==========
-aplicativo.get('/produtos', async (requisicao, resposta) => {
-    try {
-        const produtos = await consultas.obterProdutos(); 
-        resposta.status(200).json(produtos);
-    } catch (erro) {
-        console.error('Erro ao obter produtos:', erro);
-        resposta.status(500).send('Erro ao obter produtos');
-    }
-});
-
-aplicativo.get('/produtos/:id', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    try {
-        const produto = await consultas.obterProdutoPorId(id);
-        if (produto) {
-            resposta.status(200).json(produto);
-        } else {
-            resposta.status(404).send('Produto não encontrado');
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro ao obter produto');
-    }
-});
-
-aplicativo.post('/produtos', async (requisicao, resposta) => {
-    try {
-        const novoProduto = await consultas.criarProduto(requisicao.body);
-        resposta.status(201).json(novoProduto);
-    } catch (erro) {
-        resposta.status(500).send('Erro ao criar produto');
-    }
-});
-
-aplicativo.patch('/produtos/:id', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    try {
-        const produtoAtualizado = await consultas.atualizarProduto(id, requisicao.body);
-        if (produtoAtualizado) {
-            resposta.status(200).json(produtoAtualizado);
-        } else {
-            resposta.status(404).send('Produto não encontrado para atualização');
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro ao atualizar produto');
-    }
-});
-
-aplicativo.delete('/produtos/:id', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    try {
-        const produtoDesativado = await consultas.desativarProduto(id);
-        if (produtoDesativado) {
-            resposta.status(200).json({ mensagem: 'Produto desativado com sucesso', idProduto: id });
-        } else {
-            resposta.status(404).send('Produto não encontrado para desativação');
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro ao desativar produto');
     }
 });
 
