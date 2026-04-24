@@ -5,6 +5,7 @@ const consultas = require('./consultas');
 const empresasRoutes = require('./src/modules/empresas/empresas.routes');
 const produtosRoutes = require('./src/modules/produtos/produtos.routes');
 const atendentesRoutes = require('./src/modules/atendentes/atendentes.routes');
+const retiradasRoutes  = require('./src/modules/retiradas/retiradas.routes');
 const errorHandler = require('./src/middlewares/errorHandler');
 
 const aplicativo = express();
@@ -18,6 +19,7 @@ aplicativo.use(bodyParser.urlencoded({ extended: true }));
 aplicativo.use('/empresas', empresasRoutes);
 aplicativo.use('/produtos', produtosRoutes);
 aplicativo.use('/atendentes', atendentesRoutes);
+aplicativo.use('/retiradas-caixa', retiradasRoutes);
 
 // ========== ROTAS PARA VENDAS ==========
 aplicativo.get('/vendas', async (requisicao, resposta) => {
@@ -164,37 +166,6 @@ aplicativo.put('/sessoes-caixa/:id/fechar', async (requisicao, resposta) => {
 });
 
 // ========== ROTAS PARA EMPRESAS ==========
-// ========== ROTAS PARA RETIRADAS DE CAIXA ==========
-
-aplicativo.post('/retiradas-caixa', async (requisicao, resposta) => {
-    try {
-        const resultado = await consultas.criarRetiradaCaixa(requisicao.body);
-        if (resultado.sucesso) {
-            resposta.status(201).json({ 
-                mensagem: 'Retirada registrada com sucesso', 
-                retirada: resultado.retirada 
-            });
-        } else {
-            resposta.status(400).json({ 
-                mensagem: 'Falha ao registrar retirada', 
-                erro: resultado.erro 
-            });
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro interno do servidor ao processar retirada');
-    }
-});
-
-aplicativo.get('/retiradas-caixa', async (requisicao, resposta) => {
-    try {
-        const { inicio, fim } = requisicao.query;
-        const retiradas = await consultas.obterRetiradasCaixa(inicio, fim);
-        resposta.status(200).json(retiradas);
-    } catch (erro) {
-        resposta.status(500).send('Erro ao obter retiradas do caixa');
-    }
-});
-
 // ========== ATUALIZAÇÃO DE PAGAMENTOS E VENDAS ==========
 
 aplicativo.patch('/vendas/:id/pagamentos', async (requisicao, resposta) => {
