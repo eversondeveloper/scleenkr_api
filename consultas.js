@@ -23,54 +23,6 @@ const deletarSeColunaExistir = async (cliente, tabela, coluna, valor) => {
 };
 
 
-// ========== FUNÇÕES PARA SESSÕES DE CAIXA ==========
-
-const obterSessoesCaixa = async () => {
-    const consulta = `SELECT sc.*, a.nome as nome_atendente FROM sessoes_caixa sc 
-                      LEFT JOIN atendentes a ON sc.id_atendente = a.id_atendente ORDER BY sc.data_abertura DESC`;
-    const resultado = await pool.query(consulta);
-    return resultado.rows;
-};
-
-const obterSessaoAtual = async () => {
-    const consulta = `SELECT sc.*, a.nome as nome_atendente FROM sessoes_caixa sc 
-                      LEFT JOIN atendentes a ON sc.id_atendente = a.id_atendente 
-                      WHERE sc.status = 'aberta' ORDER BY sc.data_abertura DESC LIMIT 1`;
-    const resultado = await pool.query(consulta);
-    return resultado.rows[0] || null;
-};
-
-const abrirSessaoCaixa = async (dadosSessao) => {
-    const cliente = await pool.connect();
-    try {
-        await cliente.query('BEGIN');
-        const sessaoAberta = await cliente.query('SELECT * FROM sessoes_caixa WHERE id_atendente = $1 AND status = $2', [dadosSessao.id_atendente, 'aberta']);
-        if (sessaoAberta.rows.length > 0) { await cliente.query('ROLLBACK'); return { sucesso: false, erro: 'Já existe sessão aberta' }; }
-        
-        const consulta = `INSERT INTO sessoes_caixa (id_atendente, valor_inicial, id_empresa) VALUES ($1, $2, $3) RETURNING *`;
-        const resultado = await cliente.query(consulta, [
-            dadosSessao.id_atendente, 
-            dadosSessao.valor_inicial || 0, 
-            dadosSessao.id_empresa
-        ]);
-        
-        await cliente.query('COMMIT');
-        return { sucesso: true, sessao: resultado.rows[0] };
-    } catch (erro) { await cliente.query('ROLLBACK'); return { sucesso: false, erro: erro.message }; } finally { cliente.release(); }
-};
-
-const fecharSessaoCaixa = async (idSessao, dadosFechamento) => {
-    const cliente = await pool.connect();
-    try {
-        await cliente.query('BEGIN');
-        const valorFinal = parseFloat(dadosFechamento?.valor_final) || 0;
-        const consulta = `UPDATE sessoes_caixa SET data_fechamento = CURRENT_TIMESTAMP, valor_final = $1, status = 'fechada'
-                          WHERE id_sessao = $2 AND status = 'aberta' RETURNING *`;
-        const resultado = await cliente.query(consulta, [valorFinal, idSessao]);
-        await cliente.query('COMMIT');
-        return { sucesso: true, sessao: resultado.rows[0] };
-    } catch (erro) { await cliente.query('ROLLBACK'); return { sucesso: false, erro: erro.message }; } finally { cliente.release(); }
-};
 
 // ========== FUNÇÕES PARA VENDAS ==========
 
@@ -231,7 +183,6 @@ const atualizarVendaCompleta = async (idVenda, dadosVenda) => {
 
 
 module.exports = {
-    obterSessoesCaixa, obterSessaoAtual, abrirSessaoCaixa, fecharSessaoCaixa,
     obterVendas, obterDetalhesVenda, criarVenda, atualizarStatusVenda, apagarVenda, apagarVendasEmMassa,
     atualizarVendaCompleta
 };
