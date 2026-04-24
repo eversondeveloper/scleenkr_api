@@ -127,11 +127,12 @@ scleenkr/src/
 > Mesma estrutura do piloto. Um PR por módulo.
 
 - [x] `produtos` — inclui gestão de estoque e categorias ✅
-- [ ] `atendentes` — cadastro e listagem
-- [ ] `pagamentos` — tipos e registros
-- [ ] `retiradas` — fluxo de retirada de caixa
-- [ ] `relatorios` — queries de agregação/resumo
-- [ ] Remover rotas e queries correspondentes de `servidor.js` / `consultas.js`
+- [x] `atendentes` — cadastro e listagem ✅
+- [x] `pagamentos` — atualização de pagamentos por venda ✅
+- [x] `retiradas` — fluxo de retirada de caixa ✅
+- [x] `observacoes` — observações diárias (CRUD) ✅
+- ~~`relatorios`~~ — não há queries de agregação no backend; cálculos feitos no frontend
+- [x] Remover rotas e queries correspondentes de `servidor.js` / `consultas.js` ✅
 
 ---
 
@@ -220,4 +221,4 @@ scleenkr/src/
 
 ---
 
-*Última atualização: 2026-04-24 — Fase 0 ✅ · Fase 1 ✅ · Fase 2 em andamento (produtos ✅)*
+*Última atualização: 2026-04-24 — Fase 0 ✅ · Fase 1 ✅ · Fase 2 ✅ · Fase 3 em andamento*
