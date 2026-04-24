@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const consultas = require('./consultas');
+const empresasRoutes = require('./src/modules/empresas/empresas.routes');
+const errorHandler = require('./src/middlewares/errorHandler');
 
 const aplicativo = express();
 const porta = 3000;
@@ -9,6 +11,9 @@ const porta = 3000;
 aplicativo.use(cors());
 aplicativo.use(bodyParser.json());
 aplicativo.use(bodyParser.urlencoded({ extended: true }));
+
+// ========== MÓDULOS REFATORADOS (Strangler Fig) ==========
+aplicativo.use('/empresas', empresasRoutes);
 
 // ========== ROTAS PARA VENDAS ==========
 aplicativo.get('/vendas', async (requisicao, resposta) => {
@@ -300,68 +305,6 @@ aplicativo.delete('/produtos/:id', async (requisicao, resposta) => {
 });
 
 // ========== ROTAS PARA EMPRESAS ==========
-aplicativo.get('/empresas', async (requisicao, resposta) => {
-    try {
-        const empresas = await consultas.obterEmpresas();
-        resposta.status(200).json(empresas);
-    } catch (erro) {
-        resposta.status(500).send('Erro ao obter dados da empresa');
-    }
-});
-
-aplicativo.get('/empresas/:id', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    try {
-        const empresa = await consultas.obterEmpresaPorId(id);
-        if (empresa) {
-            resposta.status(200).json(empresa);
-        } else {
-            resposta.status(404).send('Empresa não encontrada');
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro ao obter detalhes da empresa');
-    }
-});
-
-aplicativo.post('/empresas', async (requisicao, resposta) => {
-    try {
-        const novaEmpresa = await consultas.criarEmpresa(requisicao.body);
-        resposta.status(201).json(novaEmpresa);
-    } catch (erro) {
-        resposta.status(500).send('Erro ao cadastrar empresa');
-    }
-});
-
-aplicativo.patch('/empresas/:id', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    try {
-        const empresaAtualizada = await consultas.atualizarEmpresa(id, requisicao.body);
-        if (empresaAtualizada) {
-            resposta.status(200).json(empresaAtualizada);
-        } else {
-            resposta.status(404).send('Empresa não encontrada para atualização');
-        }
-    } catch (erro) {
-        resposta.status(500).send('Erro ao atualizar dados da empresa');
-    }
-});
-
-// Rota de Deleção DEFINITIVA (Reset da Empresa)
-aplicativo.delete('/empresas/:id', async (requisicao, resposta) => {
-    const id = parseInt(requisicao.params.id);
-    try {
-        const resultado = await consultas.deletarEmpresaDefinitivo(id);
-        if (resultado.sucesso) {
-            resposta.status(200).json({ mensagem: `Empresa ${id} e todos os registros vinculados foram apagados com sucesso.` });
-        } else {
-            resposta.status(404).send('Empresa não encontrada ou erro ao apagar');
-        }
-    } catch (erro) {
-        console.error("Erro na rota de deleção da empresa:", erro);
-        resposta.status(500).send('Erro ao apagar empresa e registros vinculados');
-    }
-});
-
 // ========== ROTAS PARA RETIRADAS DE CAIXA ==========
 
 aplicativo.post('/retiradas-caixa', async (requisicao, resposta) => {
@@ -497,6 +440,9 @@ aplicativo.delete('/observacoes-diarias', async (requisicao, resposta) => {
         resposta.status(500).send('Erro interno ao excluir observação');
     }
 });
+
+// Handler central de erros — deve ser o último middleware registrado
+aplicativo.use(errorHandler);
 
 aplicativo.listen(porta, () => {
     console.log(`API EversCash rodando na porta ${porta}.`);

@@ -1,7 +1,7 @@
-const { Pool } = require('pg');
-const configuracao = require('./configuracaoBanco');
 
-const pool = new Pool(configuracao);
+const pool = require('./src/config/database');
+
+
 
 /**
  * FUNÇÃO AUXILIAR DE LIMPEZA SEGURA
@@ -327,33 +327,6 @@ const desativarProduto = async (id) => {
 
 // ========== FUNÇÕES PARA EMPRESAS ==========
 
-const obterEmpresas = async () => (await pool.query('SELECT * FROM empresas ORDER BY id_empresa ASC')).rows;
-
-const obterEmpresaPorId = async (id) => {
-    const res = await pool.query('SELECT * FROM empresas WHERE id_empresa = $1', [id]);
-    return res.rows[0];
-};
-
-const criarEmpresa = async (d) => {
-    const consulta = `INSERT INTO empresas (razao_social, nome_fantasia, cnpj, inscricao_estadual, endereco, cidade, estado, cep, telefone, email) 
-                      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`;
-    return (await pool.query(consulta, [d.razaoSocial, d.nomeFantasia, d.cnpj, d.inscricaoEstadual, d.endereco, d.cidade, d.estado, d.cep, d.telefone, d.email])).rows[0];
-};
-
-const atualizarEmpresa = async (id, d) => {
-    const consulta = `UPDATE empresas SET razao_social = COALESCE($1, razao_social), nome_fantasia = COALESCE($2, nome_fantasia),
-                      cnpj = COALESCE($3, cnpj), inscricao_estadual = COALESCE($4, inscricao_estadual), endereco = COALESCE($5, endereco),
-                      cidade = COALESCE($6, cidade), estado = COALESCE($7, estado), cep = COALESCE($8, cep), telefone = COALESCE($9, telefone),
-                      email = COALESCE($10, email) WHERE id_empresa = $11 RETURNING *`;
-    const res = await pool.query(consulta, [d.razaoSocial, d.nomeFantasia, d.cnpj, d.inscricaoEstadual, d.endereco, d.cidade, d.estado, d.cep, d.telefone, d.email, id]);
-    return res.rows[0];
-};
-
-const obterDadosEmpresa = async () => {
-    const resultado = await pool.query('SELECT * FROM empresas ORDER BY id_empresa LIMIT 1');
-    return resultado.rows[0];
-};
-
 // ========== RETIRADAS DE CAIXA ==========
 
 const obterRetiradasCaixa = async (inicio, fim) => {
@@ -450,27 +423,10 @@ const obterObservacoesPorPeriodo = async (inicio, fim) => {
     return resultado.rows;
 };
 
-const deletarEmpresaDefinitivo = async (idEmpresa) => {
-    const cliente = await pool.connect();
-    try {
-        await cliente.query('BEGIN');
-        await cliente.query('DELETE FROM pagamentos WHERE venda_id IN (SELECT id_venda FROM vendas WHERE id_empresa = $1)', [idEmpresa]);
-        await cliente.query('DELETE FROM itens_vendidos WHERE venda_id IN (SELECT id_venda FROM vendas WHERE id_empresa = $1)', [idEmpresa]);
-        const tabelas = ['vendas', 'sessoes_caixa', 'retiradas_caixa', 'atendentes', 'produtos', 'observacoes_diarias'];
-        for (const t of tabelas) {
-            await deletarSeColunaExistir(cliente, t, 'id_empresa', idEmpresa);
-        }
-        const res = await cliente.query('DELETE FROM empresas WHERE id_empresa = $1 RETURNING *', [idEmpresa]);
-        await cliente.query('COMMIT');
-        return { sucesso: res.rows.length > 0 };
-    } catch (e) { await cliente.query('ROLLBACK'); throw e; } finally { cliente.release(); }
-};
-
 module.exports = {
     obterAtendentes, obterAtendentePorId, criarAtendente, atualizarAtendente, deletarAtendente,
     obterSessoesCaixa, obterSessaoAtual, abrirSessaoCaixa, fecharSessaoCaixa,
     obterVendas, obterDetalhesVenda, criarVenda, atualizarStatusVenda, apagarVenda, apagarVendasEmMassa,
     obterProdutos: obterProdutosComVendas, obterProdutoPorId, criarProduto, atualizarProduto, desativarProduto,
-    obterEmpresas, obterEmpresaPorId, criarEmpresa, atualizarEmpresa,
-    obterRetiradasCaixa, criarRetiradaCaixa, atualizarPagamentosVenda, atualizarVendaCompleta, obterDadosEmpresa, salvarObservacaoDiaria, obterObservacaoPorData, deletarObservacaoDiaria, obterObservacoesPorPeriodo, deletarEmpresaDefinitivo
+    obterRetiradasCaixa, criarRetiradaCaixa, atualizarPagamentosVenda, atualizarVendaCompleta, salvarObservacaoDiaria, obterObservacaoPorData, deletarObservacaoDiaria, obterObservacoesPorPeriodo
 };
