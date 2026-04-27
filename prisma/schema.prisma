@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -------------------------------------------------
+// MÓDULO: EMPRESAS
+// -------------------------------------------------
+model Empresa {
+  id                String    @id @default(uuid()) @map("id_empresa")
+  razaoSocial       String    @map("razao_social") @db.VarChar(255)
+  nomeFantasia      String?   @map("nome_fantasia") @db.VarChar(255)
+  cnpj              String?   @unique @db.VarChar(20)
+  inscricaoEstadual String?   @map("inscricao_estadual") @db.VarChar(50)
+  endereco          String?   @db.Text
+  cidade            String?   @db.VarChar(100)
+  estado            String?   @db.Char(2)
+  cep               String?   @db.VarChar(10)
+  telefone          String?   @db.VarChar(20)
+  email             String?   @db.VarChar(100)
+  criadoEm          DateTime  @default(now()) @map("data_cadastro") @db.Timestamptz
+
+  atendentes        Atendente[]
+  sessoesCaixa      SessaoCaixa[]
+  produtos          Produtos[]
+  vendas            Vendas[]
+  retiradasCaixa    RetiradaCaixa[]
+  observacoes       ObservacaoDiaria[]
+
+  @@map("empresas")
+}
+
+// -------------------------------------------------
+// MÓDULO: ATENDENTES
+// -------------------------------------------------
+model Atendente {
+  id        String    @id @default(uuid()) @map("id_atendente")
+  empresaId String    @map("id_empresa")
+  nome      String    @db.VarChar(100)
+  email     String?   @unique @db.VarChar(100)
+  telefone  String?   @db.VarChar(20)
+  cpf       String?   @unique @db.VarChar(14)
+  ativo     Boolean?  @default(true)
+  criadoEm  DateTime? @default(now()) @map("data_cadastro") @db.Timestamptz
+
+  empresa      Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  sessoesCaixa SessaoCaixa[]
+  vendas       Vendas[]
+
+  @@map("atendentes")
+}
+
+// -------------------------------------------------
+// MÓDULO: CAIXA
+// -------------------------------------------------
+model SessaoCaixa {
+  id              String    @id @default(uuid()) @map("id_sessao")
+  atendenteId     String?   @map("id_atendente")
+  empresaId       String    @map("id_empresa")
+  dataAbertura    DateTime? @default(now()) @map("data_abertura") @db.Timestamptz
+  dataFechamento  DateTime? @map("data_fechamento") @db.Timestamptz
+  valorInicial    Decimal?  @default(0) @map("valor_inicial") @db.Decimal(10, 2)
+  valorFinal      Decimal?  @map("valor_final") @db.Decimal(10, 2)
+  status          String?   @default("aberta") @db.VarChar(20)
+
+  atendente       Atendente?      @relation(fields: [atendenteId], references: [id])
+  empresa         Empresa         @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  vendas          Vendas[]
+  retiradasCaixa  RetiradaCaixa[]
+
+  @@map("sessoes_caixa")
+}
+
+model RetiradaCaixa {
+  id           String    @id @default(uuid()) @map("id_retirada")
+  empresaId    String    @map("id_empresa")
+  sessaoId     String?   @map("id_sessao")
+  valor        Decimal   @db.Decimal(10, 2)
+  motivo       String?   @db.VarChar(255)
+  observacao   String?   @db.Text
+  dataRetirada DateTime? @default(now()) @map("data_retirada") @db.Timestamptz
+
+  empresa      Empresa      @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  sessao       SessaoCaixa? @relation(fields: [sessaoId], references: [id])
+
+  @@map("retiradas_caixa")
+}
+
+// -------------------------------------------------
+// MÓDULO: PRODUTOS
+// -------------------------------------------------
+model Produtos {
+  id            String    @id @default(uuid()) @map("id_produto")
+  empresaId     String    @map("id_empresa")
+  categoria     String    @db.VarChar(100)
+  descricao     String    @db.Text
+  preco         Decimal   @db.Decimal(10, 2)
+  custoUnitario Decimal?  @default(0.00) @map("custo_unitario") @db.Decimal(10, 2)
+  estoqueAtual  Int?      @default(0) @map("estoque_atual")
+  tipoItem      String    @default("Serviço") @map("tipo_item") @db.VarChar(50)
+  codigoBarra   String?   @map("codigo_barra") @db.VarChar(50)
+  ativo         Boolean?  @default(true)
+  criadoEm      DateTime? @default(now()) @map("data_cadastro") @db.Timestamptz
+
+  empresa       Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@map("produtos")
+}
+
+// -------------------------------------------------
+// MÓDULO: VENDAS
+// -------------------------------------------------
+model Vendas {
+  id               String    @id @default(uuid()) @map("id_venda")
+  sessaoId         String?   @map("id_sessao")
+  atendenteId      String?   @map("id_atendente")
+  empresaId        String    @map("id_empresa")
+  dataHora         DateTime? @default(now()) @map("data_hora") @db.Timestamptz
+  valorTotalBruto  Decimal   @map("valor_total_bruto") @db.Decimal(10, 2)
+  valorPagoTotal   Decimal   @map("valor_pago_total") @db.Decimal(10, 2)
+  valorTroco       Decimal?  @default(0) @map("valor_troco") @db.Decimal(10, 2)
+  quantidadeItens  Int?      @default(0) @map("quantidade_itens")
+  statusVenda      String?   @default("Finalizada") @map("status_venda") @db.VarChar(50)
+  editada          Boolean?  @default(false)
+
+  sessao       SessaoCaixa?   @relation(fields: [sessaoId], references: [id])
+  atendente    Atendente?     @relation(fields: [atendenteId], references: [id])
+  empresa      Empresa        @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  itens        ItemVendido[]
+  pagamentos   Pagamento[]
+
+  @@map("vendas")
+}
+
+model ItemVendido {
+  id            String   @id @default(uuid()) @map("id_item")
+  vendaId       String?  @map("venda_id")
+  idProduto     String?  @map("id_produto")
+  categoria     String?  @db.VarChar(100)
+  descricaoItem String   @map("descricao_item") @db.Text
+  precoUnitario Decimal  @map("preco_unitario") @db.Decimal(10, 2)
+  quantidade    Int
+  subtotal      Decimal  @db.Decimal(10, 2)
+
+  venda         Vendas?  @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+
+  @@map("itens_vendidos")
+}
+
+model Pagamento {
+  id               String  @id @default(uuid()) @map("id_pagamento")
+  vendaId          String? @map("venda_id")
+  metodo           String  @db.VarChar(50)
+  valorPago        Decimal @map("valor_pago") @db.Decimal(10, 2)
+  referenciaMetodo String? @map("referencia_metodo") @db.VarChar(255)
+
+  venda            Vendas? @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+
+  @@map("pagamentos")
+}
+
+// -------------------------------------------------
+// MÓDULO: OBSERVAÇÕES
+// -------------------------------------------------
+model ObservacaoDiaria {
+  id             String    @id @default(uuid()) @map("id_observacao")
+  empresaId      String    @map("id_empresa")
+  dataObservacao DateTime  @unique @map("data_observacao") @db.Date
+  texto          String?   @db.Text
+  criadoEm       DateTime? @default(now()) @map("data_criacao") @db.Timestamptz
+
+  empresa        Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@map("observacoes_diarias")
+}
