@@ -1,0 +1,5 @@
+export * from './cep'
+export * from './cnpj'
+export * from './email'
+export * from './id'
+export * from './telefone'
