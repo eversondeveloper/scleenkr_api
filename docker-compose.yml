@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:15-alpine
@@ -10,22 +12,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./init:/docker-entrypoint-initdb.d
       - pgdata:/var/lib/postgresql/data
-
-  app:
-    build: .
-    container_name: scleenkr_api
-    ports:
-      - "3000:3000" # Windows 3000 -> Container 3000
-    environment:
-      DB_HOST: db # A API precisa usar o nome do serviço para achar o banco
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_PORT: 5432
-    depends_on:
-      - db
 
 volumes:
   pgdata:
