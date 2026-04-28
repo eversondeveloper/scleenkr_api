@@ -22,7 +22,8 @@ model Empresa {
   telefone          String?   @db.VarChar(20)
   email             String?   @db.VarChar(100)
   criadoEm          DateTime  @default(now()) @map("data_cadastro") @db.Timestamptz
-
+  atualizadoEm DateTime @updatedAt @map("data_atualizacao") @db.Timestamptz
+  
   atendentes        Atendente[]
   sessoesCaixa      SessaoCaixa[]
   produtos          Produtos[]

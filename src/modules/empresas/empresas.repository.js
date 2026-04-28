@@ -13,6 +13,8 @@ const pool = require('../../config/database');
  * Helper interno: deleta registros de uma tabela apenas se a coluna existir.
  * Preservado do legado para suportar a deleção definitiva com segurança.
  */
+
+// Essa função é EXTREMAMENTE PERIGOSA e nem deveria existir.
 async function deletarSeColunaExistir(cliente, tabela, coluna, valor) {
   const check = await cliente.query(
     `SELECT column_name FROM information_schema.columns
@@ -21,6 +23,9 @@ async function deletarSeColunaExistir(cliente, tabela, coluna, valor) {
   );
   if (check.rows.length > 0) {
     await cliente.query(`DELETE FROM ${tabela} WHERE ${coluna} = $1`, [valor]);
+    // ponto de atenção na linha a cima, ela está variável a SQL Injection, uma vulnerabilidade extretamente perigosa
+    // que permite o atacante a executar querys na nossa base de dados. Dessa forma, ele pode roubar informações confidenciais 
+    // e o cliente poderia processar a empresa (e com razão). 
   }
 }
 
