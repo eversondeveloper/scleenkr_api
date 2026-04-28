@@ -25,7 +25,7 @@ async function deletarSeColunaExistir(cliente, tabela, coluna, valor) {
     await cliente.query(`DELETE FROM ${tabela} WHERE ${coluna} = $1`, [valor]);
     // ponto de atenção na linha a cima, ela está variável a SQL Injection, uma vulnerabilidade extretamente perigosa
     // que permite o atacante a executar querys na nossa base de dados. Dessa forma, ele pode roubar informações confidenciais 
-    // e o cliente poderia processar a empresa (e com razão). 
+    // e o cliente poderia processar a empresa/scleenkr (e com razão). 
   }
 }
 
