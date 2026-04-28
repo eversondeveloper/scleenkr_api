@@ -105,7 +105,7 @@ export class Empresa {
         this.atualizadoEm = new Date()
     }
 
-    public formatarParaJSON() {
+    public buscarPropriedades() {
         return {
             id: this.id.value,
             razaoSocial: this.razaoSocial,
