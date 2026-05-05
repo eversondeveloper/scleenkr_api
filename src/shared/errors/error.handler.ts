@@ -1,4 +1,4 @@
-import { TipoAppErro, AppErro } from "./app.erro";
+import { TipoAppErro, AppErro } from "./app.error";
 
 type RespostaDeErroHttp = {
   status: number;
