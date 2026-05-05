@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["node", "jest"],
     "allowJs": true,
     "checkJs": false,
     "target": "ES2020",
@@ -29,7 +30,8 @@
     }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/**/*.spec.ts"
   ],
   "exclude": [
     "node_modules",
