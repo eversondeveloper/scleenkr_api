@@ -1,4 +1,5 @@
 import * as vo from '../vo'
+import { AppErro, TipoAppErro } from "@/shared/errors/app.error"
 
 export class Empresa {
    private constructor(
@@ -31,10 +32,10 @@ export class Empresa {
     ): Empresa {
         const agora = new Date()
         if (razaoSocial.length < 5) {
-            throw new Error("Sua razão deve possuir mais de 5 caracteres")
+            throw new AppErro("sua razão deve possuir mais de 5 caracteres", TipoAppErro.ENTRADA_INVALIDA)
         }
         if (nomeFantasia.length < 3) {
-            throw new Error("Seu nome fantasia deve possuir mais de 3 caracteres")
+            throw new AppErro("seu nome fantasia deve possuir mais de 3 caracteres", TipoAppErro.ENTRADA_INVALIDA)
         }
         return new Empresa(
             new vo.ID(),
@@ -91,7 +92,7 @@ export class Empresa {
 
     public atualizarInscricaoEstadual(novaInscricaoEstadual: string): void {
         if (novaInscricaoEstadual.length < 8) {
-            throw new Error("Insira uma inscrição estadual com o tamanho válido")
+            throw new AppErro("insira uma inscrição estadual com o tamanho válido", TipoAppErro.ENTRADA_INVALIDA)
         }
         this.inscricaoEstadual = novaInscricaoEstadual
         this.atualizadoEm = new Date()
@@ -99,7 +100,7 @@ export class Empresa {
 
     public atualizarNomeFantasia(novoNomeFantasia: string): void {
         if (novoNomeFantasia.length < 3) {
-            throw new Error("Seu nome fantasia deve possuir mais de 3 caracteres.")
+            throw new AppErro("seu nome fantasia deve possuir mais de 3 caracteres.", TipoAppErro.ENTRADA_INVALIDA)
         }
         this.nomeFantasia = novoNomeFantasia
         this.atualizadoEm = new Date()
