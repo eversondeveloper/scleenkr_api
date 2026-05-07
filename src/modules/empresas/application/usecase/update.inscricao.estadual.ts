@@ -1,5 +1,4 @@
 import { EmpresaRepository } from "../repository/empresa.repository";
-import { Empresa } from "../../domain/entity/empresa";
 
 export interface AtualizarInscricaoEstadualInput {
     id: string;
