@@ -10,13 +10,14 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@prisma/config": "^7.8.0",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "pg": "^8.16.3",
+    "pg": "^8.20.0",
     "typia": "^12.1.0",
     "uuid": "^9.0.1"
   },
