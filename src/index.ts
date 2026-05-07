@@ -7,6 +7,7 @@ import { BuscarEmpresaPorID } from "./modules/empresas/application/query/get.emp
 import { HttpEmpresaController } from "./modules/empresas/infra/controller/http.empresa.controller";
 import { RotasEmpresas } from "./modules/empresas/infra/controller/http.empresa.routes";
 import express from "express";
+import morgan from 'morgan'
 import { erroMiddleware } from "./middlewares/error.handler";
 
 const adapter = iniciarAdapatador()
@@ -22,9 +23,10 @@ const controller = new HttpEmpresaController(
 )
 const routes = new RotasEmpresas(controller)
 const app = express()
-app.use(erroMiddleware)
+app.use(morgan("dev"))
 app.use(express.json())
 app.use(routes.getRouter())
+app.use(erroMiddleware)
 app.listen(8080, () => {
     console.log("Server rodando em http://localhost:8080/")
 })
