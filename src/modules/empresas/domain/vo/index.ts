@@ -1,5 +1,5 @@
 export * from './cep'
 export * from './cnpj'
-export * from './email'
-export * from './id'
-export * from './telefone'
+export { Email } from '../../../../shared/vo/email'
+export { ID } from '../../../../shared/vo/id'
+export { Telefone } from '../../../../shared/vo/telefone'
