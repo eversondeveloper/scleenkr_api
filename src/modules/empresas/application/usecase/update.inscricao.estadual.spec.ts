@@ -23,4 +23,13 @@ describe('CriarEmpresa', () => {
         expect(result.id).toBe(id)
         console.log(await repository.BuscarPorID(result.id))
     })
+
+    it('deve lançar erro quando a inscricao estadual possui tipo inválido', async () => {
+        const repository = new InMemoryEmpresaRepository()
+        const atualizarInscricaoEstadual = new AtualizarInscricaoEstadual(repository)
+
+        await expect(
+            atualizarInscricaoEstadual.run({id: "empresa-id", inscricaoEstadual: 123 as any})
+        ).rejects.toThrow('inscricaoEstadual must be a string')
+    })
 })
