@@ -24,53 +24,53 @@ model Empresa {
   criadoEm          DateTime  @default(now()) @map("data_cadastro") @db.Timestamptz
   atualizadoEm DateTime @updatedAt @map("data_atualizacao") @db.Timestamptz
 
-  atendentes        Atendente[]
-  sessoesCaixa      SessaoCaixa[]
-  produtos          Produtos[]
-  vendas            Vendas[]
-  retiradasCaixa    RetiradaCaixa[]
-  observacoes       ObservacaoDiaria[]
+  funcionarios        Funcionario[]
+  sessoesCaixa        SessaoCaixa[]
+  produtos            Produtos[]
+  vendas              Vendas[]
+  retiradasCaixa      RetiradaCaixa[]
+  observacoes         ObservacaoDiaria[]
 
   @@map("empresas")
 }
 
 // -------------------------------------------------
-// MÓDULO: ATENDENTES
+// MÓDULO: FUNCIONARIOS
 // -------------------------------------------------
-model Atendente {
-  id        String    @id @default(uuid()) @map("id_atendente")
+model Funcionario {
+  id        String    @id @default(uuid()) @map("id_funcionario")
   empresaId String    @map("id_empresa")
   nome      String    @db.VarChar(100)
-  email     String   @unique @db.VarChar(100)
+  email     String    @unique @db.VarChar(100)
   telefone  String?   @db.VarChar(20)
   cpf       String?   @unique @db.VarChar(14)
   ativo     Boolean?  @default(true)
-  criadoEm  DateTime @default(now()) @map("data_cadastro") @db.Timestamptz
+  criadoEm  DateTime  @default(now()) @map("data_cadastro") @db.Timestamptz
 
   empresa      Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   sessoesCaixa SessaoCaixa[]
   vendas       Vendas[]
 
-  @@map("atendentes")
+  @@map("funcionarios")
 }
 
 // -------------------------------------------------
 // MÓDULO: CAIXA
 // -------------------------------------------------
 model SessaoCaixa {
-  id              String    @id @default(uuid()) @map("id_sessao")
-  atendenteId     String?   @map("id_atendente")
-  empresaId       String    @map("id_empresa")
-  dataAbertura    DateTime? @default(now()) @map("data_abertura") @db.Timestamptz
-  dataFechamento  DateTime? @map("data_fechamento") @db.Timestamptz
-  valorInicial    Decimal?  @default(0) @map("valor_inicial") @db.Decimal(10, 2)
-  valorFinal      Decimal?  @map("valor_final") @db.Decimal(10, 2)
-  status          String?   @default("aberta") @db.VarChar(20)
+  id                String    @id @default(uuid()) @map("id_sessao")
+  funcionarioId     String?   @map("id_funcionario")
+  empresaId         String    @map("id_empresa")
+  dataAbertura      DateTime? @default(now()) @map("data_abertura") @db.Timestamptz
+  dataFechamento    DateTime? @map("data_fechamento") @db.Timestamptz
+  valorInicial      Decimal?  @default(0) @map("valor_inicial") @db.Decimal(10, 2)
+  valorFinal        Decimal?  @map("valor_final") @db.Decimal(10, 2)
+  status            String?   @default("aberta") @db.VarChar(20)
 
-  atendente       Atendente?      @relation(fields: [atendenteId], references: [id])
-  empresa         Empresa         @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  vendas          Vendas[]
-  retiradasCaixa  RetiradaCaixa[]
+  funcionario      Funcionario?       @relation(fields: [funcionarioId], references: [id])
+  empresa          Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  vendas           Vendas[]
+  retiradasCaixa   RetiradaCaixa[]
 
   @@map("sessoes_caixa")
 }
@@ -115,23 +115,23 @@ model Produtos {
 // MÓDULO: VENDAS
 // -------------------------------------------------
 model Vendas {
-  id               String    @id @default(uuid()) @map("id_venda")
-  sessaoId         String?   @map("id_sessao")
-  atendenteId      String?   @map("id_atendente")
-  empresaId        String    @map("id_empresa")
-  dataHora         DateTime? @default(now()) @map("data_hora") @db.Timestamptz
-  valorTotalBruto  Decimal   @map("valor_total_bruto") @db.Decimal(10, 2)
-  valorPagoTotal   Decimal   @map("valor_pago_total") @db.Decimal(10, 2)
-  valorTroco       Decimal?  @default(0) @map("valor_troco") @db.Decimal(10, 2)
-  quantidadeItens  Int?      @default(0) @map("quantidade_itens")
-  statusVenda      String?   @default("Finalizada") @map("status_venda") @db.VarChar(50)
-  editada          Boolean?  @default(false)
+  id                 String    @id @default(uuid()) @map("id_venda")
+  sessaoId           String?   @map("id_sessao")
+  funcionarioId      String?   @map("id_funcionario")
+  empresaId          String    @map("id_empresa")
+  dataHora           DateTime? @default(now()) @map("data_hora") @db.Timestamptz
+  valorTotalBruto    Decimal   @map("valor_total_bruto") @db.Decimal(10, 2)
+  valorPagoTotal     Decimal   @map("valor_pago_total") @db.Decimal(10, 2)
+  valorTroco         Decimal?  @default(0) @map("valor_troco") @db.Decimal(10, 2)
+  quantidadeItens    Int?      @default(0) @map("quantidade_itens")
+  statusVenda        String?   @default("Finalizada") @map("status_venda") @db.VarChar(50)
+  editada            Boolean?  @default(false)
 
-  sessao       SessaoCaixa?   @relation(fields: [sessaoId], references: [id])
-  atendente    Atendente?     @relation(fields: [atendenteId], references: [id])
-  empresa      Empresa        @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  itens        ItemVendido[]
-  pagamentos   Pagamento[]
+  sessao         SessaoCaixa?   @relation(fields: [sessaoId], references: [id])
+  funcionario    Funcionario?     @relation(fields: [funcionarioId], references: [id])
+  empresa        Empresa        @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  itens          ItemVendido[]
+  pagamentos     Pagamento[]
 
   @@map("vendas")
 }
