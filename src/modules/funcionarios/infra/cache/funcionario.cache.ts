@@ -6,7 +6,7 @@ export class RedisFuncionarioCache implements FuncionarioCache{
     constructor(private readonly rdb: RedisClientType){}
 
     public async set(funcionario: FuncionarioModelCache): Promise<void> {
-        await this.rdb.set(funcionario.cpf, JSON.stringify(funcionario))
+        await this.rdb.set(funcionario.cpf, JSON.stringify(funcionario), {EX: 3600*2})
     }
 
     public async get(cpf: string): Promise<FuncionarioModelCache | null> {
