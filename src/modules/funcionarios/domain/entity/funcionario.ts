@@ -140,4 +140,19 @@ export class Funcionario {
         this.ativo = false
         this.atualizadoEm = new Date()
     }
+
+    public buscarPropriedades(): any {
+        return {
+            id: this.id.value,
+            nome: this.nome,
+            email: this.email.value,
+            telefone: this.telefone.value,
+            cpf: this.cpf.value,
+            ativo: this.ativo,
+            cargo: this.cargo,
+            empresaID: this.empresaID,
+            criadoEm: this.criadoEm,
+            atualizadoEm: this.atualizadoEm,
+        }
+    }   
 }
