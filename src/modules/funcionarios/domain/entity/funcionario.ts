@@ -95,7 +95,7 @@ export class Funcionario {
         const cpfValidado = new CPF(cpf)
         return {
             email: emailValidado.value,
-            cpf: cpfValidado,
+            cpf: cpfValidado.value,
             empresaID: this.empresaID,
             atividade: false,
         }
