@@ -41,11 +41,11 @@ model Atendente {
   id        String    @id @default(uuid()) @map("id_atendente")
   empresaId String    @map("id_empresa")
   nome      String    @db.VarChar(100)
-  email     String?   @unique @db.VarChar(100)
+  email     String   @unique @db.VarChar(100)
   telefone  String?   @db.VarChar(20)
   cpf       String?   @unique @db.VarChar(14)
   ativo     Boolean?  @default(true)
-  criadoEm  DateTime? @default(now()) @map("data_cadastro") @db.Timestamptz
+  criadoEm  DateTime @default(now()) @map("data_cadastro") @db.Timestamptz
 
   empresa      Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   sessoesCaixa SessaoCaixa[]
