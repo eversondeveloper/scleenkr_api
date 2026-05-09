@@ -22,7 +22,7 @@ model Empresa {
   telefone          String?   @db.VarChar(20)
   email             String?   @db.VarChar(100)
   criadoEm          DateTime  @default(now()) @map("data_cadastro") @db.Timestamptz
-  atualizadoEm DateTime @updatedAt @map("data_atualizacao") @db.Timestamptz
+  atualizadoEm      DateTime @updatedAt @map("data_atualizacao") @db.Timestamptz
 
   funcionarios        Funcionario[]
   sessoesCaixa        SessaoCaixa[]
@@ -38,15 +38,16 @@ model Empresa {
 // MÓDULO: FUNCIONARIOS
 // -------------------------------------------------
 model Funcionario {
-  id        String    @id @default(uuid()) @map("id_funcionario")
-  empresaId String    @map("id_empresa")
-  nome      String    @db.VarChar(100)
-  email     String    @unique @db.VarChar(100)
-  telefone  String?   @db.VarChar(20)
-  cpf       String?   @unique @db.VarChar(14)
-  ativo     Boolean?  @default(true)
-  criadoEm  DateTime  @default(now()) @map("data_cadastro") @db.Timestamptz
-
+  id           String        @id @default(uuid()) @map("id_funcionario")
+  empresaId    String        @map("id_empresa")
+  nome         String        @db.VarChar(100)
+  email        String        @unique @db.VarChar(100)
+  telefone     String?       @db.VarChar(20)
+  cpf          String?       @unique @db.VarChar(14)
+  ativo        Boolean?      @default(true)
+  cargo        String        @db.VarChar(255)
+  criadoEm     DateTime      @default(now()) @map("data_cadastro") @db.Timestamptz
+  atualizadoEm DateTime      @updatedAt @map("data_atualizacao") @db.Timestamptz
   empresa      Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   sessoesCaixa SessaoCaixa[]
   vendas       Vendas[]
