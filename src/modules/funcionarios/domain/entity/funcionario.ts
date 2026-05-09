@@ -90,12 +90,17 @@ export class Funcionario {
     public validarIntencaoDeNovoFuncionario(
         email: string,
         cpf: string,
+        cargo: string,
     ): any {
+        if (!Funcionario.esteCargoExiste(cargo)) {
+            throw new AppErro("este cargo não existe", TipoAppErro.ENTRADA_INVALIDA)
+        }
         const emailValidado = new vo.Email(email)
         const cpfValidado = new CPF(cpf)
         return {
             email: emailValidado.value,
             cpf: cpfValidado.value,
+            cargo: cargo.toLowerCase(),
             empresaID: this.empresaID,
             atividade: false,
         }
