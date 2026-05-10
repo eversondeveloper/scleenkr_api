@@ -4,7 +4,7 @@ import { AppErro, TipoAppErro } from '@/shared/errors/app.error'
 
 type FuncionarioData = {
     id: string,
-    empresaID: string,
+    empresaId: string,
     nome: string,
     email: string,
     telefone: string,
@@ -162,7 +162,7 @@ export class Funcionario {
             cpf: this.cpf.value,
             ativo: this.ativo,
             cargo: this.cargo,
-            empresaID: this.empresaID,
+            empresaId: this.empresaID,
             criadoEm: this.criadoEm,
             atualizadoEm: this.atualizadoEm,
         }

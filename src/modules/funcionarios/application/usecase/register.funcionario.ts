@@ -31,7 +31,7 @@ export class RegistrarFuncionario {
             email: funcionarioTemporario.email,
             cpf: funcionarioTemporario.cpf,
             cargo: funcionarioTemporario.cargo,
-            empresaID: dados.empresaID,
+            empresaID: dados.empresaId,
             atividade: false,
         })
 

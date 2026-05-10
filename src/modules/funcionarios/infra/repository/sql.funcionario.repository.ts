@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Funcionario } from "../../domain/entity/funcionario";
 import { FuncionarioRepository } from "../../application/repository/repository";
 
-class SQLFuncionarioRepository implements FuncionarioRepository {
+export class SQLFuncionarioRepository implements FuncionarioRepository {
     constructor(private readonly db: PrismaClient) {}
 
     async criar(funcionario: Funcionario): Promise<string> {
