@@ -1,6 +1,22 @@
 import * as vo from '../vo'
 import { AppErro, TipoAppErro } from "@/shared/errors/app.error"
 
+type EmpresaData = {
+    id: string;
+    razaoSocial: string;
+    nomeFantasia: string;
+    cnpj: string;
+    endereco: string;
+    cidade: string;
+    estado: string;
+    cep: string;
+    telefone: string;
+    email: string;
+    criadoEm: Date;
+    atualizadoEm: Date;
+    inscricaoEstadual: string;
+}
+
 export class Empresa {
    private constructor(
         private readonly id: vo.ID,
@@ -106,7 +122,7 @@ export class Empresa {
         this.atualizadoEm = new Date()
     }
 
-    public buscarPropriedades() {
+    public buscarPropriedades(): EmpresaData {
         return {
             id: this.id.value,
             razaoSocial: this.razaoSocial,
@@ -120,7 +136,7 @@ export class Empresa {
             email: this.email.value,
             criadoEm: this.criadoEm,
             atualizadoEm: this.atualizadoEm,
-            inscricaoEstadual: this.inscricaoEstadual
+            inscricaoEstadual: this.inscricaoEstadual ?? "isento"
         }
     }
 
