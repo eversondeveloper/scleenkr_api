@@ -87,7 +87,7 @@ export class Funcionario {
         return cargosPermitidos.includes(this.cargo)
     }
 
-    public validarIntencaoDeNovoFuncionario(
+    public criarIntencaoDeNovoFuncionario(
         email: string,
         cpf: string,
         cargo: string,
