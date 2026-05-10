@@ -19,16 +19,17 @@ export function startEmpresa(infra: EmpresaInfra) {
     const repository = new SQLEmpresaRepository(prismaClient);
     
     const sqlEmpresaGateway = new SQLEmpresaGateway(prismaClient);
-    const inMemoryEmpresaGateway = new InMemoryEmpresaGateway();
     
     const criarEmpresa = new usecase.CriarEmpresa(repository);
     const atualizarInscricaoEstadual = new usecase.AtualizarInscricaoEstadual(repository);
     const buscarEmpresaPorID = new BuscarEmpresaPorID(prismaClient);
+    const criarDono = new usecase.CriarDono(sqlEmpresaGateway)
     
     const controller = new HttpEmpresaController(
         criarEmpresa,
         atualizarInscricaoEstadual,
         buscarEmpresaPorID,
+        criarDono,
     );
     
     const routes = new RotasEmpresas(controller);
@@ -40,6 +41,5 @@ export function startEmpresa(infra: EmpresaInfra) {
         routes,
         repository,
         sqlEmpresaGateway,
-        inMemoryEmpresaGateway
     };
 }

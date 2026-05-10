@@ -7,6 +7,7 @@ export class HttpEmpresaController {
         private readonly criarEmpresa: usecase.CriarEmpresa,
         private readonly atualizarInscricaoEstadual: usecase.AtualizarInscricaoEstadual,
         private readonly buscarEmpresaPorId: BuscarEmpresaPorID,
+        private readonly criarDono: usecase.CriarDono,
     ){}
 
     public async criarEmpresaHandler(req: Request, res: Response): Promise<Response> {
@@ -44,6 +45,20 @@ export class HttpEmpresaController {
         const out = await this.buscarEmpresaPorId.run(req.params.id.toString())
         return res.status(200).json({
             data: out
+        })
+    }
+
+    public async criarDonoHandler(req: Request, res: Response): Promise<Response> {
+        const input = req.body
+        const out = await this.criarDono.run({
+            empresaID: input.EmpresaId,
+            nome:  input.nome,
+            email: input.email,
+            telefone: input.telefone,
+            cpf: input.cpf,
+        })
+        return res.status(201).json({
+            message: out.ID
         })
     }
 }

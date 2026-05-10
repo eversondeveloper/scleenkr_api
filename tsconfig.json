@@ -11,7 +11,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
