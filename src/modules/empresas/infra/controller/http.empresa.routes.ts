@@ -27,6 +27,13 @@ export class RotasEmpresas {
                 this.controller.buscarEmpresaPorIDHandler.bind(this.controller)
             )
         )
+
+        this.router.post(
+            "/empresa/dono",
+            manipuladorAssincrono(
+                this.controller.criarDonoHandler.bind(this.controller)
+            )
+        )
     }
 
     public getRouter(): Router {
