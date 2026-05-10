@@ -16,29 +16,23 @@ export interface EmpresaInfra {
 export function startEmpresa(infra: EmpresaInfra) {
     const { prismaClient, app } = infra;
     
-    // Repositories
     const repository = new SQLEmpresaRepository(prismaClient);
     
-    // Gateways
     const sqlEmpresaGateway = new SQLEmpresaGateway(prismaClient);
     const inMemoryEmpresaGateway = new InMemoryEmpresaGateway();
     
-    // Use Cases
     const criarEmpresa = new usecase.CriarEmpresa(repository);
     const atualizarInscricaoEstadual = new usecase.AtualizarInscricaoEstadual(repository);
     const buscarEmpresaPorID = new BuscarEmpresaPorID(prismaClient);
     
-    // Controller
     const controller = new HttpEmpresaController(
         criarEmpresa,
         atualizarInscricaoEstadual,
         buscarEmpresaPorID,
     );
     
-    // Routes
     const routes = new RotasEmpresas(controller);
-    
-    // Configuração das rotas no app
+
     app.use(routes.getRouter());
     
     return {

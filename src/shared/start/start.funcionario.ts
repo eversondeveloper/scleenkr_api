@@ -4,9 +4,10 @@ import { Transporter } from "nodemailer";
 import { SQLFuncionarioRepository } from "@/modules/funcionarios/infra/repository/sql.funcionario.repository";
 import { RedisFuncionarioCache } from "@/modules/funcionarios/infra/cache/funcionario.cache";
 import { SMTPFuncionarioServer } from "@/modules/funcionarios/infra/smtp/smtp.funcionario";
-import { CriarFuncionario } from "@/modules/funcionarios/application/usecase/create.funcionario";
-import { RegistrarFuncionario } from "@/modules/funcionarios/application/usecase/register.funcionario";
+import * as usecase from "@/modules/funcionarios/application/usecase"
 import { BuscarFuncionarioPorID } from "@/modules/funcionarios/application/query/buscar.funcionario.por.id";
+import { HttpFuncionarioController } from "@/modules/funcionarios/infra/controller/http.funcionario.controller";
+import { RotasFuncionarios } from "@/modules/funcionarios/infra/controller/http.funcionario.routes";
 import express from "express";
 
 export interface FuncionarioInfra {
@@ -24,9 +25,19 @@ export function startFuncionario(infra: FuncionarioInfra) {
     const cache = new RedisFuncionarioCache(redisClient);
     const smtpServer = new SMTPFuncionarioServer(smtpTransporter, smtpUser);
     
-    const criarFuncionario = new CriarFuncionario(cache, repository);
-    const registrarFuncionario = new RegistrarFuncionario(cache, smtpServer, repository);
+    const criarFuncionario = new usecase.CriarFuncionario(cache, repository);
+    const registrarFuncionario = new usecase.RegistrarFuncionario(cache, smtpServer, repository);
     const buscarFuncionarioPorID = new BuscarFuncionarioPorID(prismaClient);
+
+    const controller = new HttpFuncionarioController(
+        registrarFuncionario,
+        criarFuncionario,
+        buscarFuncionarioPorID,
+    )
+
+    const rotas = new RotasFuncionarios(controller)
+
+    infra.app.use(rotas.getRouter())
     
     return {
         repository,
