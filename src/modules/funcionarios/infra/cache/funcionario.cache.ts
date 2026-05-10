@@ -1,7 +1,8 @@
-import { RedisClientType } from "redis";
+import { createClient } from "redis";
 import { FuncionarioModelCache } from "./funcionario.model.cache";
 import { FuncionarioCache } from "../../application/cache/cache";
 
+type RedisClientType = ReturnType<typeof createClient>
 export class RedisFuncionarioCache implements FuncionarioCache{
     constructor(private readonly rdb: RedisClientType){}
 
