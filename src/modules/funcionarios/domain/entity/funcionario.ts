@@ -2,6 +2,18 @@ import * as vo from '@/shared/vo'
 import { CPF} from '../vo/cpf'
 import { AppErro, TipoAppErro } from '@/shared/errors/app.error'
 
+type FuncionarioData = {
+    id: string,
+    empresaID: string,
+    nome: string,
+    email: string,
+    telefone: string,
+    cpf: string
+    ativo: boolean,
+    cargo: string,
+    criadoEm: Date,
+    atualizadoEm: Date,
+}
 export class Funcionario {
     private constructor(
         private readonly id: vo.ID,
@@ -141,7 +153,7 @@ export class Funcionario {
         this.atualizadoEm = new Date()
     }
 
-    public buscarPropriedades(): any {
+    public buscarPropriedades(): FuncionarioData {
         return {
             id: this.id.value,
             nome: this.nome,
