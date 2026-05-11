@@ -2,7 +2,7 @@ import { EmpresaGateway } from "../gateway/gateway";
 import { EmpresaService } from "../../domain/service/create.funcionario";
 
 export interface CriarDonoInput {
-    empresaID: string;
+    empresaId: string;
     nome: string;
     email: string;
     telefone: string;
@@ -20,7 +20,7 @@ export class CriarDono {
 
     public async run(input: CriarDonoInput): Promise<CriarDonoOutput> {
         const dadosDono = EmpresaService.validarDono(
-            input.empresaID,
+            input.empresaId,
             input.nome,
             input.email,
             input.telefone,

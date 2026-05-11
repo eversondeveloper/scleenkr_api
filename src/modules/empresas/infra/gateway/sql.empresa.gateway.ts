@@ -9,7 +9,7 @@ export class SQLEmpresaGateway implements EmpresaGateway {
         await this.db.funcionario.create({
             data: {
                 id: funcionarioData.id,
-                empresaId: funcionarioData.empresaID,
+                empresaId: funcionarioData.empresaId,
                 nome: funcionarioData.nome,
                 email: funcionarioData.email,
                 telefone: funcionarioData.telefone,
@@ -20,7 +20,6 @@ export class SQLEmpresaGateway implements EmpresaGateway {
                 atualizadoEm: funcionarioData.atualizadoEm
             }
         });
-
         return funcionarioData.id;
     }
 }

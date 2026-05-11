@@ -1,6 +1,6 @@
 export interface FuncionarioGatewayDTO {
     id: string;
-    empresaID: string;
+    empresaId: string;
     nome: string;
     email: string;
     telefone: string;

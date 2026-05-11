@@ -27,14 +27,14 @@ export class RegistrarFuncionario {
         const funcionarioTemporario = funcionario.criarIntencaoDeNovoFuncionario(input.email, input.cpf, input.cargo)
         const dados = funcionario.buscarPropriedades()
 
-       await this.funcionarioCache.set({
+        await this.funcionarioCache.set({
             email: funcionarioTemporario.email,
             cpf: funcionarioTemporario.cpf,
             cargo: funcionarioTemporario.cargo,
             empresaID: dados.empresaId,
             atividade: false,
         })
-
+        
         await this.smtpServer.enviar({
             email: funcionarioTemporario.email,
             cargo: funcionarioTemporario.cargo,

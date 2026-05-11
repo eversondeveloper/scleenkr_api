@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { AppErro, TipoAppErro } from "@/shared/errors/app.error";
 
 export interface BuscarEmpresaPorIDOutput {
     id: string,
@@ -22,7 +23,7 @@ export class BuscarEmpresaPorID {
             where: { id }
         })
         if (!dados) {
-            throw new Error("empresa não encontrada")
+            throw new AppErro("empresa não encontrada", TipoAppErro.NAO_ENCONTRADO)
         }
         const valorPadrao = "isento"
         return {

@@ -12,7 +12,7 @@ export class HttpFuncionarioController {
     public async registrarFuncionarioHandler(req: Request, res: Response): Promise<Response> {
         const input = req.body
         await this.registrarFuncionario.run({
-            funcionarioID: input.funcionarioID,
+            funcionarioID: input.funcionarioId,
             email: input.email,
             cpf: input.cpf,
             cargo: input.cargo,

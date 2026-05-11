@@ -51,7 +51,7 @@ export class HttpEmpresaController {
     public async criarDonoHandler(req: Request, res: Response): Promise<Response> {
         const input = req.body
         const out = await this.criarDono.run({
-            empresaID: input.EmpresaId,
+            empresaId: input.empresaId,
             nome:  input.nome,
             email: input.email,
             telefone: input.telefone,

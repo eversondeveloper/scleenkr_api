@@ -7,7 +7,7 @@ describe('CriarDono', () => {
     const usecase = new CriarDono(gateway);
 
     const input = {
-      empresaID: 'empresa-123',
+      empresaId: 'empresa-123',
       nome: 'João Dono',
       email: 'joao@empresa.com',
       telefone: '11988887777',
@@ -27,7 +27,7 @@ describe('CriarDono', () => {
     const usecase = new CriarDono(gateway);
 
     const input = {
-      empresaID: 'empresa-123',
+      empresaId: 'empresa-123',
       nome: 'Jo', // nome muito curto
       email: 'joao@empresa.com',
       telefone: '11988887777',
@@ -42,7 +42,7 @@ describe('CriarDono', () => {
     const usecase = new CriarDono(gateway);
 
     const input = {
-      empresaID: 'empresa-123',
+      empresaId: 'empresa-123',
       nome: 'João Dono',
       email: 'email-invalido',
       telefone: '11988887777',
@@ -57,7 +57,7 @@ describe('CriarDono', () => {
     const usecase = new CriarDono(gateway);
 
     const input = {
-      empresaID: 'empresa-123',
+      empresaId: 'empresa-123',
       nome: 'João Dono',
       email: 'joao@empresa.com',
       telefone: '11988887777',
