@@ -12,6 +12,7 @@ export class SessaoCaixa {
         private totalVendas: number,
         private totalSuprimentos: number,
         private totalSangrias: number,
+        private totalRetiradas: number,
         private valorFinal?: number,
         private dataFechamento?: Date,
     ){}
@@ -31,6 +32,7 @@ export class SessaoCaixa {
             0,
             0,
             0,
+            0,
             undefined,
             undefined,
         )
@@ -45,6 +47,7 @@ export class SessaoCaixa {
         totalVendas: number,
         totalSuprimentos: number,
         totalSangrias: number,
+        totalRetiradas: number,
         valorFinal?: number,
         dataFechamento?: Date,
     ): SessaoCaixa {
@@ -58,6 +61,7 @@ export class SessaoCaixa {
             totalVendas,
             totalSuprimentos,
             totalSangrias,
+            totalRetiradas,
             valorFinal,
             dataFechamento,
         )
@@ -109,5 +113,15 @@ export class SessaoCaixa {
             throw new AppErro("o valor da sangria não pode ser menor que zero", TipoAppErro.ENTRADA_INVALIDA)
         }
         this.totalSangrias += valor
+    }
+    
+    public realizarRetirada(valor: number): void {
+        if (valor > this.buscarSaldoAtual()) {
+            throw new AppErro("o valor da retirada não pode ser maior que o saldo atual", TipoAppErro.OPERACAO_INVALIDA)
+        }
+        if (valor < 0) {
+            throw new AppErro("o valor da retirada não pode ser menor que zero", TipoAppErro.ENTRADA_INVALIDA)
+        }
+        this.totalRetiradas += valor
     }
 }
