@@ -70,6 +70,7 @@ model SessaoCaixa {
   totalVendas       Decimal   @default(0) @map("total_vendas") @db.Decimal(10, 2)
   totalSuprimentos  Decimal   @default(0) @map("total_suprimentos") @db.Decimal(10, 2)
   totalSangrias     Decimal   @default(0) @map("total_sangrias") @db.Decimal(10, 2)
+  totalRetiradas    Decimal   @default(0) @map("total_retiradas") @db.Decimal(10, 2)
 
   funcionario      Funcionario?       @relation(fields: [funcionarioId], references: [id])
   empresa          Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
