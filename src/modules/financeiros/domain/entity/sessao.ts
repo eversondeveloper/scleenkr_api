@@ -13,7 +13,7 @@ type sessaoData = {
     totalSangrias: number,
     totalRetiradas: number,
     valorFinal?: number,
-    dataFechamento?: Date,
+    dataFechamento?: Date | null,
 }
 export class SessaoCaixa {
     private constructor(
@@ -28,7 +28,7 @@ export class SessaoCaixa {
         private totalSangrias: number,
         private totalRetiradas: number,
         private valorFinal?: number,
-        private dataFechamento?: Date,
+        private dataFechamento?: Date | null,
     ){}
     static abrir(
         funcionarioId: string,
@@ -63,7 +63,7 @@ export class SessaoCaixa {
         totalSangrias: number,
         totalRetiradas: number,
         valorFinal?: number,
-        dataFechamento?: Date,
+        dataFechamento?: Date | null,
     ): SessaoCaixa {
         return new SessaoCaixa(
             new vo.ID(id),
