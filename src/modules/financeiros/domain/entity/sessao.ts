@@ -35,6 +35,9 @@ export class SessaoCaixa {
         empresaId: string,
         valorInicial: number,
     ): SessaoCaixa {
+        if (valorInicial < 0) {
+            throw new AppErro("o valor inicial não pode ser negativo", TipoAppErro.ENTRADA_INVALIDA)
+        }
         const agora = new Date()
         return new SessaoCaixa(
             new vo.ID(),
