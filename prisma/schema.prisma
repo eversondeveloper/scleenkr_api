@@ -67,10 +67,10 @@ model SessaoCaixa {
   valorInicial      Decimal?  @default(0) @map("valor_inicial") @db.Decimal(10, 2)
   valorFinal        Decimal?  @map("valor_final") @db.Decimal(10, 2)
   status            String?   @default("aberta") @db.VarChar(20)
-  totalVendas       Decimal   @default(0) @map("total_vendas") @db.Decimal(10, 2)
-  totalSuprimentos  Decimal   @default(0) @map("total_suprimentos") @db.Decimal(10, 2)
-  totalSangrias     Decimal   @default(0) @map("total_sangrias") @db.Decimal(10, 2)
-  totalRetiradas    Decimal   @default(0) @map("total_retiradas") @db.Decimal(10, 2)
+  totalVendas       Decimal?   @default(0) @map("total_vendas") @db.Decimal(10, 2)
+  totalSuprimentos  Decimal?   @default(0) @map("total_suprimentos") @db.Decimal(10, 2)
+  totalSangrias     Decimal?   @default(0) @map("total_sangrias") @db.Decimal(10, 2)
+  totalRetiradas    Decimal?   @default(0) @map("total_retiradas") @db.Decimal(10, 2)
 
   @@index([funcionarioId, status])
 
