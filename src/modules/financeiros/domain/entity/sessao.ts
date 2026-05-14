@@ -1,6 +1,20 @@
 import { AppErro, TipoAppErro } from "@/shared/errors/app.error";
 import * as vo from "@/shared/vo"
 
+type sessaoData = {
+    id: string,
+    funcionarioId: string,
+    empresaId: string,
+    dataAbertura: Date,
+    valorInicial: number,
+    status: string,
+    totalVendas: number,
+    totalSuprimentos: number,
+    totalSangrias: number,
+    totalRetiradas: number,
+    valorFinal?: number,
+    dataFechamento?: Date | null,
+}
 export class SessaoCaixa {
     private constructor(
         private readonly id: vo.ID,
@@ -12,8 +26,9 @@ export class SessaoCaixa {
         private totalVendas: number,
         private totalSuprimentos: number,
         private totalSangrias: number,
+        private totalRetiradas: number,
         private valorFinal?: number,
-        private dataFechamento?: Date,
+        private dataFechamento?: Date | null,
     ){}
     static abrir(
         funcionarioId: string,
@@ -31,6 +46,7 @@ export class SessaoCaixa {
             0,
             0,
             0,
+            0,
             undefined,
             undefined,
         )
@@ -45,8 +61,9 @@ export class SessaoCaixa {
         totalVendas: number,
         totalSuprimentos: number,
         totalSangrias: number,
+        totalRetiradas: number,
         valorFinal?: number,
-        dataFechamento?: Date,
+        dataFechamento?: Date | null,
     ): SessaoCaixa {
         return new SessaoCaixa(
             new vo.ID(id),
@@ -58,6 +75,7 @@ export class SessaoCaixa {
             totalVendas,
             totalSuprimentos,
             totalSangrias,
+            totalRetiradas,
             valorFinal,
             dataFechamento,
         )
@@ -109,5 +127,32 @@ export class SessaoCaixa {
             throw new AppErro("o valor da sangria não pode ser menor que zero", TipoAppErro.ENTRADA_INVALIDA)
         }
         this.totalSangrias += valor
+    }
+    
+    public realizarRetirada(valor: number): void {
+        if (valor > this.buscarSaldoAtual()) {
+            throw new AppErro("o valor da retirada não pode ser maior que o saldo atual", TipoAppErro.OPERACAO_INVALIDA)
+        }
+        if (valor < 0) {
+            throw new AppErro("o valor da retirada não pode ser menor que zero", TipoAppErro.ENTRADA_INVALIDA)
+        }
+        this.totalRetiradas += valor
+    }
+
+    public buscarPropriedades(): sessaoData {
+        return {
+            id: this.id.value,
+            funcionarioId: this.funcionarioId,
+            empresaId: this.empresaId,
+            dataAbertura: this.dataAbertura,
+            valorInicial: this.valorInicial,
+            status: this.status,
+            totalVendas: this.totalVendas,
+            totalSuprimentos: this.totalSuprimentos,
+            totalSangrias: this.totalSangrias,
+            totalRetiradas: this.totalRetiradas,
+            valorFinal: this.valorFinal,
+            dataFechamento: this.dataFechamento
+        }
     }
 }
