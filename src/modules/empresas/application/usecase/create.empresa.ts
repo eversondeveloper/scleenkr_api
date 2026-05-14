@@ -62,6 +62,6 @@ export class CriarEmpresa {
         const id = await this.empresaRepository.Salvar(empresa)
         return {
             ID: id,
-        }
+        }   
     }
 }
