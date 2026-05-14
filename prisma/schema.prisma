@@ -72,6 +72,8 @@ model SessaoCaixa {
   totalSangrias     Decimal   @default(0) @map("total_sangrias") @db.Decimal(10, 2)
   totalRetiradas    Decimal   @default(0) @map("total_retiradas") @db.Decimal(10, 2)
 
+  @@index([funcionarioId, status])
+
   funcionario      Funcionario?       @relation(fields: [funcionarioId], references: [id])
   empresa          Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   vendas           Vendas[]
