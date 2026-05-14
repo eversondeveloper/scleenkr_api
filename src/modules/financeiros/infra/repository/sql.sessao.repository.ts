@@ -33,12 +33,12 @@ export class SQLSessaoCaixaRepository implements SessaoCaixaRepository{
             dados.dataAbertura!,
             dados.valorInicial?.toNumber()!,
             dados.status!,
-            dados.totalVendas.toNumber(),
-            dados.totalSuprimentos.toNumber(),
-            dados.totalSangrias.toNumber(),
-            dados.totalRetiradas.toNumber(),
-            dados.valorFinal?.toNumber(),
-            dados.dataFechamento!, 
+            dados.totalVendas?.toNumber() ?? 0,
+            dados.totalSuprimentos?.toNumber() ?? 0,
+            dados.totalSangrias?.toNumber() ?? 0,
+            dados.totalRetiradas?.toNumber() ?? 0,
+            dados.valorFinal?.toNumber() ?? 0,
+            dados.dataFechamento, 
         )
     }
 }
